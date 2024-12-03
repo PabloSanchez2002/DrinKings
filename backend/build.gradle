@@ -27,10 +27,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	// implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
-    implementation 'org.hibernate:hibernate-core:6.6.2.Final'
+	// implementation 'org.springframework.boot:spring-boot-starter-security'
+	
+	implementation 'com.h2database:h2'  // H2 Database
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'javax.persistence:javax.persistence-api:2.2'  // JPA API (javax.persistence.Entity, Id)
+
+	// implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
+	// implementation 'org.hibernate.orm:hibernate-community-dialects'
+	
+    // implementation 'org.hibernate:hibernate-core:6.6.2.Final'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
