@@ -4,9 +4,18 @@ import DrinKings.backend.CRUD.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+import java.util.Optional;
 
-    User findByEmail(String email);
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Boolean existsByUsername(String username);
+
+    Boolean existsByEmail(String email);
+
+    Optional<User> findById(Integer id);
+
+    Optional<User> findByUsername(String username);
+
+    Optional<User> findByEmail(String email);
+
 }

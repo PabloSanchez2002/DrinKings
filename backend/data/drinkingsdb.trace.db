@@ -124,3 +124,27 @@ select u1_0.id,u1_0.activated,u1_0.email,u1_0.hashed_password,u1_0.username from
 2024-12-03 18:27:16.437689+01:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id,u1_0.activated,u1_0.email,u1_0.hashed_password,u1_0.username from [*]user u1_0 where u1_0.username=?"; expected "identifier"; SQL statement:
 select u1_0.id,u1_0.activated,u1_0.email,u1_0.hashed_password,u1_0.username from user u1_0 where u1_0.username=? [42001-232]
+2024-12-03 20:37:01.180229+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id from [*]user u1_0 where u1_0.username=? fetch first ? rows only"; expected "identifier"; SQL statement:
+select u1_0.id from user u1_0 where u1_0.username=? fetch first ? rows only [42001-232]
+2024-12-03 20:40:12.929657+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id from [*]user u1_0 where u1_0.username=? fetch first ? rows only"; expected "identifier"; SQL statement:
+select u1_0.id from user u1_0 where u1_0.username=? fetch first ? rows only [42001-232]
+2024-12-03 20:40:23.401298+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id from [*]user u1_0 where u1_0.username=? fetch first ? rows only"; expected "identifier"; SQL statement:
+select u1_0.id from user u1_0 where u1_0.username=? fetch first ? rows only [42001-232]
+2024-12-03 20:50:00.847931+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id from [*]user u1_0 where u1_0.username=? fetch first ? rows only"; expected "identifier"; SQL statement:
+select u1_0.id from user u1_0 where u1_0.username=? fetch first ? rows only [42001-232]
+2024-12-03 20:52:19.465603+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id from [*]user u1_0 where u1_0.username=? fetch first ? rows only"; expected "identifier"; SQL statement:
+select u1_0.id from user u1_0 where u1_0.username=? fetch first ? rows only [42001-232]
+2024-12-03 20:53:15.457394+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select u1_0.id from [*]user u1_0 where u1_0.username=? fetch first ? rows only"; expected "identifier"; SQL statement:
+select u1_0.id from user u1_0 where u1_0.username=? fetch first ? rows only [42001-232]
+2024-12-03 20:53:23.600675+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+select u1_0.id from users u1_0 where u1_0.username=? fetch first ? rows only [42104-232]
+2024-12-03 20:55:21.945665+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM[*]"; expected "identifier"; SQL statement:
+SELECT * FROM [42001-232]

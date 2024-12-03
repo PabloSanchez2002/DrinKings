@@ -6,7 +6,3 @@
 # ./gradlew bootRun
 # ./gradlew clean build --refresh-dependencies
 sudo apt update
-sudo apt install sqlite3
-sudo apt install libsqlite3-dev
-
-sqlite3 drinkings.db

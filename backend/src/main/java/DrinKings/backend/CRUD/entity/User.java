@@ -3,21 +3,24 @@ package DrinKings.backend.CRUD.entity;
 import jakarta.persistence.*;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
-@Table(name = "USER")
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "USERS")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String username;
     private String hashedPassword;
