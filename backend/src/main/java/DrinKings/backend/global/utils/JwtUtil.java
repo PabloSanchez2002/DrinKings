@@ -1,16 +1,33 @@
 package DrinKings.backend.global.utils;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Date;
+import io.jsonwebtoken.security.Keys;
 
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "yoursecretkeydgfkjhragkajhsrgoahsfkgjhaskfgjhawsrkgjhaskrjghaskrjghaskrjghaksrjgha"; // Keep
-                                                                                                                                   // this
-                                                                                                                                   // secret!
+    private static final String SECRET = "calamardoeluapoedftresxcfresdcfresxcfredxcfrdcfredcftrdftredcftrdgtrd";
+    private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    // private static final SecretKey KEY = generateRandomKey();
 
-    // Generate JWT token
+    public static SecretKey generateRandomKey() {
+        KeyGenerator keyGenerator;
+        try {
+            keyGenerator = KeyGenerator.getInstance("HmacSHA256");
+            keyGenerator.init(256); // Secure 256-bit key
+            return keyGenerator.generateKey();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating random key", e);
+        }
+    }
+
     public static String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -19,36 +36,30 @@ public class JwtUtil {
                 // 30)) // 10 hours expiration
                 // no expiration
                 .setExpiration(null)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Parse JWT token
+    public static Claims extractClaims(String token) {
+        System.out.println("aqui llegamos");
+        return Jwts.parserBuilder()
+                .setSigningKey(KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public static String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractClaims(token).getSubject();
     }
 
-    // Validate token
     public static boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractClaims(token).getExpiration().before(new Date());
     }
 
-    private static Date extractExpiration(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
+    public static boolean validateTokenUsername(String token, String username) {
+        Claims claims = extractClaims(token);
+        return username.equals(claims.getSubject()) && !isTokenExpired(token);
     }
 
-    // Validate token against user
-    public static boolean validateToken(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
-    }
 }

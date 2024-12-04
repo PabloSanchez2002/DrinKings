@@ -1,5 +1,7 @@
 package DrinKings.backend.CRUD.entity;
 
+// import DrinKings.backend.CRUD.entity.League;
+
 import jakarta.persistence.*;
 import lombok.Setter;
 import lombok.AllArgsConstructor;

@@ -11,8 +11,13 @@ import DrinKings.backend.global.dto.LoginResponse;
 import DrinKings.backend.global.utils.JwtUtil;
 
 import io.micrometer.core.ipc.http.HttpSender.Response;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,19 +42,29 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws ResourceNotFoundException {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response)
+            throws ResourceNotFoundException {
         // Retrieve the user based on username
         User user = userService.getUserByUsername(loginRequest.getUsername());
-
-        System.out.println("User: " + user + " Password: " + loginRequest.getPassword());
 
         // Check if the password matches
         if (BCrypt.checkpw(loginRequest.getPassword(), user.getHashedPassword())) {
             // Generate JWT token
-
             String token = JwtUtil.generateToken(user.getUsername());
 
-            return ResponseEntity.ok(new LoginResponse(token));
+            // Set the token in a cookie
+            Cookie cookie = new Cookie("auth_token", token);
+            cookie.setHttpOnly(true); // Prevents JavaScript access to the token
+            cookie.setSecure(true); // Ensures cookie is sent over HTTPS only
+            cookie.setPath("/"); // The cookie will be available for all paths in the domain
+            cookie.setMaxAge(60 * 60 * 24); // The cookie will expire after one day (adjust as needed)
+
+            response.addCookie(cookie);
+
+            // Redirect to home page
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, "/home")
+                    .build();
         }
 
         // Invalid credentials
@@ -61,6 +76,5 @@ public class UserController {
             throws ResourceNotFoundException, AttributeException {
         return ResponseEntity.ok(userService.updateUser(id, userDto));
     }
-    // @PostMapping("/login")
 
 }

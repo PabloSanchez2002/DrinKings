@@ -5,4 +5,3 @@
 # Gradle 4.4.1
 # ./gradlew bootRun
 # ./gradlew clean build --refresh-dependencies
-sudo apt update
