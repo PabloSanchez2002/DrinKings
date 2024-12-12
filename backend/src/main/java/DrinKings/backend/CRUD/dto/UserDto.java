@@ -16,14 +16,6 @@ public class UserDto {
     private String password;
     private String email;
 
-    // public User toEntity() {
-    // return User.builder()
-    // .name(username)
-    // .email(email)
-    // .password(password)
-    // .build();
-    // }
-
     @Builder
     public UserDto(String username, String password, String email) {
         this.username = username;

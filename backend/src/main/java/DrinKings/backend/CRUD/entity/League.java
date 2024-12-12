@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Entity
 @Setter
 @Getter
@@ -24,7 +22,7 @@ public class League {
 
     private String name;
     private String description;
-
-    // Getters and Setters
+    @Column(unique = true, nullable = false)
+    private String shareToken;
 
 }
