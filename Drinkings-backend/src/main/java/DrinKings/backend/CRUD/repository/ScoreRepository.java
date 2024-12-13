@@ -8,4 +8,6 @@ import DrinKings.backend.CRUD.entity.Score;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
+    Iterable<Score> findByLeagueIdAndUserId(int leagueId, int userId);
+
 }

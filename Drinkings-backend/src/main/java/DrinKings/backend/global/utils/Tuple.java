@@ -1,4 +1,4 @@
-package com.tfg.backend.global.utils;
+package DrinKings.backend.global.utils;
 
 public class Tuple<A, B> {
     private final A first;
@@ -19,6 +19,6 @@ public class Tuple<A, B> {
 
     @Override
     public String toString() {
-        return "Tuple{" + "first=" + first + ", second=" + second + '}';
+        return "(" + first + "," + second + ")";
     }
 }

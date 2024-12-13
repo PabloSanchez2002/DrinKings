@@ -36,8 +36,10 @@ public class User {
     @Builder.Default
     private Set<League> leagues = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    // Add the roles field as an enum
+    @ElementCollection(fetch = FetchType.EAGER) // For multiple roles, use ElementCollection
+    @Enumerated(EnumType.STRING) // Store as string values
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
     private Set<Role> roles = new HashSet<>();
 }

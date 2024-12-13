@@ -1,6 +1,5 @@
 package DrinKings.backend.CRUD.dto;
 
-import DrinKings.backend.CRUD.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
