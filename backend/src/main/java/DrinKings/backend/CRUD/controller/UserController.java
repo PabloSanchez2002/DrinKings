@@ -45,39 +45,6 @@ public class UserController {
         return ResponseEntity.ok(userService.addUser(userDto));
     }
 
-    // @PostMapping("/login")
-    // public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,
-    // HttpServletResponse response)
-    // throws ResourceNotFoundException {
-    // // Retrieve the user based on username
-    // User user = userService.getUserByUsername(loginRequest.getUsername());
-    // System.out.println(user);
-    // // Check if the password matches
-    // if (BCrypt.checkpw(loginRequest.getPassword(), user.getHashedPassword())) {
-    // // Generate JWT token
-    // String token = JwtUtil.generateToken(user.getUsername());
-
-    // // Set the token in a cookie
-    // Cookie cookie = new Cookie("auth_token", token);
-    // cookie.setHttpOnly(true); // Prevents JavaScript access to the token
-    // cookie.setSecure(true); // Ensures cookie is sent over HTTPS only
-    // cookie.setPath("/"); // The cookie will be available for all paths in the
-    // domain
-    // cookie.setMaxAge(60 * 60 * 24); // The cookie will expire after one day
-    // (adjust as needed)
-
-    // response.addCookie(cookie);
-
-    // // Redirect to home page
-    // return ResponseEntity.status(HttpStatus.FOUND)
-    // .header(HttpHeaders.LOCATION, "/home")
-    // .build();
-    // }
-
-    // // Invalid credentials
-    // return ResponseEntity.status(401).body("Invalid username or password");
-    // }
-
     @GetMapping("/login")
     public ResponseEntity<?> login(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
             HttpServletResponse response)
@@ -131,13 +98,10 @@ public class UserController {
         return ResponseEntity.status(401).body("Invalid username or password");
     }
 
-    // @PostMapping("/check-password/{id}")
-    // public ResponseEntity<Boolean> checkPassword(@PathVariable("id") int id,
-    // @RequestBody String password)
-    // throws ResourceNotFoundException {
-    // User user = userService.getUserById(id);
-    // return ResponseEntity.ok(BCrypt.checkpw(password, user.getHashedPassword()));
-    // }
+    @GetMapping("/{id}")
+    private ResponseEntity<User> getUserById(@PathVariable("id") int id) throws ResourceNotFoundException {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
 
     @PostMapping("/{id}")
     private ResponseEntity<User> update(@PathVariable("id") int id, @RequestBody UserDto userDto)
@@ -145,26 +109,53 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, userDto));
     }
 
-    @PostMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     private ResponseEntity<Void> delete(@PathVariable("id") int id) throws ResourceNotFoundException {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
-    private ResponseEntity<User> getUserById(@PathVariable("id") int id) throws ResourceNotFoundException {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
-    @GetMapping("/username/{username}")
+    @GetMapping("/getByusername/{username}")
     private ResponseEntity<User> getUserByUsername(@PathVariable("username") String username)
             throws ResourceNotFoundException {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
-    @GetMapping("/email/{email}")
+    @GetMapping("/getByemail/{email}")
     private ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) throws ResourceNotFoundException {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
+    // @PostMapping("/login")
+    // public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,
+    // HttpServletResponse response)
+    // throws ResourceNotFoundException {
+    // // Retrieve the user based on username
+    // User user = userService.getUserByUsername(loginRequest.getUsername());
+    // System.out.println(user);
+    // // Check if the password matches
+    // if (BCrypt.checkpw(loginRequest.getPassword(), user.getHashedPassword())) {
+    // // Generate JWT token
+    // String token = JwtUtil.generateToken(user.getUsername());
+
+    // // Set the token in a cookie
+    // Cookie cookie = new Cookie("auth_token", token);
+    // cookie.setHttpOnly(true); // Prevents JavaScript access to the token
+    // cookie.setSecure(true); // Ensures cookie is sent over HTTPS only
+    // cookie.setPath("/"); // The cookie will be available for all paths in the
+    // domain
+    // cookie.setMaxAge(60 * 60 * 24); // The cookie will expire after one day
+    // (adjust as needed)
+
+    // response.addCookie(cookie);
+
+    // // Redirect to home page
+    // return ResponseEntity.status(HttpStatus.FOUND)
+    // .header(HttpHeaders.LOCATION, "/home")
+    // .build();
+    // }
+
+    // // Invalid credentials
+    // return ResponseEntity.status(401).body("Invalid username or password");
+    // }
 }

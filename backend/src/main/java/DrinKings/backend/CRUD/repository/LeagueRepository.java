@@ -14,4 +14,6 @@ public interface LeagueRepository extends JpaRepository<League, Integer> {
 
     Optional<League> findByName(String username);
 
+    Optional<League> findByShareToken(String shareToken);
+
 }
