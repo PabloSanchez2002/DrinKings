@@ -9,7 +9,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import DrinKings.backend.global.utils.Role;
 
 @Entity
 @Setter
@@ -29,10 +32,12 @@ public class User {
     private String email;
     private boolean activated;
 
-    // @ManyToMany
-    // @JoinTable(name = "user_league", joinColumns = @JoinColumn(name = "user_id"),
-    // inverseJoinColumns = @JoinColumn(name = "league_id"))
-    // private Set<League> leagues;
+    @ManyToMany(mappedBy = "users")
+    @Builder.Default
+    private Set<League> leagues = new HashSet<>();
 
-    // Getters and Setters
+    @ManyToMany
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 }

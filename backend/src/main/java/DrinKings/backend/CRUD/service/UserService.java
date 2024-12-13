@@ -1,13 +1,17 @@
 package DrinKings.backend.CRUD.service;
 
+import DrinKings.backend.CRUD.entity.League;
 import DrinKings.backend.CRUD.entity.User;
+import DrinKings.backend.CRUD.repository.LeagueRepository;
 import DrinKings.backend.CRUD.repository.UserRepository;
 import DrinKings.backend.global.exceptions.AttributeException;
 import DrinKings.backend.global.exceptions.ResourceNotFoundException;
 import DrinKings.backend.CRUD.dto.UserDto;
 import DrinKings.backend.global.utils.PasswordUtil;
+import DrinKings.backend.global.utils.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -18,6 +22,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LeagueRepository leagueRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -77,13 +84,19 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    private int autoIncrementId() {
-        List<User> users = userRepository.findAll();
-        if (users.isEmpty()) {
-            return 1;
-        }
-        // return users.get(users.size() - 1).getId() + 1;
-        return users.stream().max(Comparator.comparing(User::getId)).get().getId() + 1;
+    public User addUserToLeague(int userId, int leagueId, Role role) {
+        User user = userRepository.findById(userId).orElseThrow();
+        League league = leagueRepository.findById(leagueId).orElseThrow();
+
+        // Add the user to the league and set the role (you can also have an enum for
+        // roles)
+        league.getUsers().add(user);
+        user.getLeagues().add(league);
+
+        userRepository.save(user);
+        leagueRepository.save(league);
+
+        return user;
     }
 
 }

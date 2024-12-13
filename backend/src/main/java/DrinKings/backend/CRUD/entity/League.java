@@ -1,5 +1,8 @@
 package DrinKings.backend.CRUD.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
@@ -24,5 +27,14 @@ public class League {
     private String description;
     @Column(unique = true, nullable = false)
     private String shareToken;
+
+    @ManyToMany
+    @JoinTable(name = "user_league", joinColumns = @JoinColumn(name = "league_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @Builder.Default
+    private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "league")
+    @Builder.Default
+    private Set<Score> scores = new HashSet<>();
 
 }
