@@ -18,3 +18,6 @@
 # npm run build
 # npm run preview
 
+# npx shadcn-vue@latest init
+# npx shadcn-vue@latest add X
+
