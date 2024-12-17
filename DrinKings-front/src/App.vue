@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import HelloWorld from './components/HelloWorld.vue'
 import { ref } from 'vue'
-import { Button } from '@/components/ui/button'
+import { Toaster } from '@/components/ui/toast'
 
 const isDarkMode = ref(true)
 
@@ -9,6 +9,7 @@ const isDarkMode = ref(true)
 
 <template>
   <div :class="{ dark: isDarkMode }" class="min-h-screen bg-background text-foreground">
+    <Toaster />
     <router-view />
   </div>
 </template>

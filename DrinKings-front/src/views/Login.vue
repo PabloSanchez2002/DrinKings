@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
                 Login
             </CardTitle>
             <CardDescription>
-                Enter your email below to login to your account
+                Inicia sesión con tu correo electrónico
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -23,9 +23,9 @@ import { Label } from '@/components/ui/label'
                 </div>
                 <div class="grid gap-2">
                     <div class="flex items-center">
-                        <Label for="password">Password</Label>
+                        <Label for="password">Contraseña</Label>
                         <a href="#" class="ml-auto inline-block text-sm underline">
-                            Forgot your password?
+                            ¿Olvidates tu contraseña?
                         </a>
                     </div>
                     <Input id="password" type="password" required />
@@ -33,15 +33,12 @@ import { Label } from '@/components/ui/label'
                 <Button type="submit" class="w-full">
                     Login
                 </Button>
-                <Button variant="outline" class="w-full">
-                    Login with Google
-                </Button>
             </div>
             <div class="mt-4 text-center text-sm">
-                Don't have an account?
-                <a href="#" class="underline">
-                    Sign up
-                </a>
+                ¿No tienes cuenta?
+                <router-link class="underline" to="signup" color="foreground">
+                    Crear una cuenta
+                </router-link>
             </div>
         </CardContent>
     </Card>

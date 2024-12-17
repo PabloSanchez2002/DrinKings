@@ -1,28 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import Home from '@/views/Home.vue'; // Example component
 import SignUp from '@/views/SignUp.vue';
-// import Home from '@/views/Home.vue';
+import Access from '@/views/Access.vue';
+import Login from '@/views/Login.vue';
+import Home from '@/views/Home.vue';
 // import path from 'path';
 
 const routes = [
+  {
+    path: '/home', // URL path
+    name: 'Home', // Route name (optional)
+    component: Home, // Component to render
+  },
   // {
-  //   path: '/', // URL path
-  //   name: 'Home', // Route name (optional)
-  //   component: Home, // Component to render
+  //   path: '/signup',
+  //   name: 'SignUp',
+  //   component: SignUp,
   // },
   {
-    path: '/signup',
-    name: 'SignUp',
-    component: SignUp,
+    path: '/access',
+    component: Access,
+    children: [
+      { path: 'signup', component: SignUp },
+      { path: 'login', component: Login },
+    ],
   },
-//   {
-//     path: '/dashboard',
-//     component: Dashboard,
-//     children: [
-//       { path: 'profile', component: Profile },
-//       { path: 'settings', component: Settings },
-//     ],
-//   },
 ];
 
 const router = createRouter({
