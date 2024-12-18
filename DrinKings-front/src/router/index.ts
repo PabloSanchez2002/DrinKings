@@ -10,12 +10,8 @@ const routes = [
     path: '/home', // URL path
     name: 'Home', // Route name (optional)
     component: Home, // Component to render
+    meta: { requiresAuth: true },
   },
-  // {
-  //   path: '/signup',
-  //   name: 'SignUp',
-  //   component: SignUp,
-  // },
   {
     path: '/access',
     component: Access,
@@ -31,13 +27,13 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//     const isAuthenticated = !!localStorage.getItem('authToken');
-//     if (to.meta.requiresAuth && !isAuthenticated) {
-//       next('/login');
-//     } else {
-//       next();
-//     }
-//   });
+router.beforeEach((to, from, next) => {
+    const isAuthenticated = !!localStorage.getItem('auth_token');
+    if (to.meta.requiresAuth && !isAuthenticated) {
+      next('/access/login');
+    } else {
+      next();
+    }
+  });
 
 export default router;

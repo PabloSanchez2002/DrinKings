@@ -55,20 +55,20 @@ public class UserController {
             return ResponseEntity.status(400).body("Missing or invalid Authorization header");
         }
 
-        // Decode Base64 encoded username:password
+        // Decode Base64 encoded email:password
         String base64Credentials = authorization.substring("Basic ".length());
         String credentials = new String(Base64.getDecoder().decode(base64Credentials), StandardCharsets.UTF_8);
 
-        // Split credentials into username and password
+        // Split credentials into email and password
         String[] values = credentials.split(":", 2);
         if (values.length != 2) {
             return ResponseEntity.status(400).body("Invalid Authorization header format");
         }
-        String username = values[0];
+        String email = values[0];
         String password = values[1];
 
         // Retrieve the user based on username
-        User user = userService.getUserByUsername(username);
+        User user = userService.getUserByEmail(email);
         if (user == null) {
             return ResponseEntity.status(401).body("User not found");
         }
@@ -95,7 +95,7 @@ public class UserController {
         }
 
         // Invalid credentials
-        return ResponseEntity.status(401).body("Invalid username or password");
+        return ResponseEntity.status(401).body("Invalid email or password");
     }
 
     @GetMapping("/{id}")
