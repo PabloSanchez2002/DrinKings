@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { CircleUser, Beer } from 'lucide-vue-next'
+import { CirclePlus, SquarePlus } from 'lucide-vue-next';
 import { useRouter } from 'vue-router'
 import { jwtDecode } from 'jwt-decode';
 
@@ -53,6 +53,16 @@ const logout = () => {
             <a href="#" class="text-muted-foreground hover:text-foreground">
               Liga Leyendas
             </a>
+            <div class="flex flex-col gap-2 ">
+              <a href="#" class="text-muted-foreground hover:text-foreground flex items-center gap-2">
+                <CirclePlus class="h-7 w-7" />
+                Crea una liga
+              </a>
+              <a href="#" class="text-muted-foreground hover:text-foreground flex items-center gap-2">
+                <SquarePlus class="h-7 w-7" />
+                Unete a una liga
+              </a>
+            </div>
           </nav>
         </SheetContent>
       </Sheet>
@@ -67,7 +77,7 @@ const logout = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
+            <DropdownMenuLabel @click="router.push('profile')">Mi cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Soporte</DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -76,40 +86,6 @@ const logout = () => {
         </DropdownMenu>
       </div>
     </header>
-    <main class="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
-      <div class="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 class="text-3xl font-semibold">
-          Liga:
-        </h1>
-      </div>
-      <div class="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-        <div class="grid gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Añade bebidas</CardTitle>
-              <CardDescription>
-                Marca aquí tus consumiciones.
-              </CardDescription>
-            </CardHeader>
-            <CardContent class="flex flex-col gap-4">
-              <div class="flex justify-between gap-2 my-4">
-                <Button variant="secondary" class="p-0 w-24 h-24 rounded-lg">
-                  <img src="/cubata.jpg" alt="Cubata" class="rounded-lg w-20 " />
-                </Button>
-                <Button variant="secondary" class="p-0 w-24 h-24 rounded-lg">
-                  <img src="/tercio.png" alt="Tercio" class="rounded-lg h-24" />
-                </Button>
-                <Button variant="secondary" class="p-0 w-24 h-24 rounded-lg">
-                  <img src="/tercio.png" alt="Cubata" class="rounded-lg h-20" />
-                </Button>
-              </div>
-            </CardContent>
-            <CardFooter class="border-t px-6 py-4">
-              <Button>Save</Button>
-            </CardFooter>
-          </Card>
-        </div>
-      </div>
-    </main>
+    <router-view />
   </div>
 </template>

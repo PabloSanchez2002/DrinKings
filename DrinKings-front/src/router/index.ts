@@ -3,14 +3,23 @@ import SignUp from '@/views/SignUp.vue';
 import Access from '@/views/Access.vue';
 import Login from '@/views/Login.vue';
 import Home from '@/views/Home.vue';
-// import path from 'path';
+import Profile from '@/views/Profile.vue';
+import Liga from '@/views/Liga.vue';
 
 const routes = [
+  {
+    path: '/:pathMatch(.*)*', // Catch all route
+    redirect: '/home', // Redirect to /home
+  },
   {
     path: '/home', // URL path
     name: 'Home', // Route name (optional)
     component: Home, // Component to render
     meta: { requiresAuth: true },
+    children: [
+      {path: 'profile', component: Profile,},
+      {path: 'league/:id', component: Liga,},
+    ]
   },
   {
     path: '/access',
@@ -20,6 +29,7 @@ const routes = [
       { path: 'login', component: Login },
     ],
   },
+
 ];
 
 const router = createRouter({
