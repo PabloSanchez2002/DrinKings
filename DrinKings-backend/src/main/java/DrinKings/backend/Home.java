@@ -31,4 +31,9 @@ public class Home {
         }
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "Test endpoint is working";
+    }
+
 }

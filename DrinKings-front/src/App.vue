@@ -2,16 +2,47 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import { ref } from 'vue'
 import { Toaster } from '@/components/ui/toast'
-
+import apiClient from '@/services/apiClient'
 const isDarkMode = ref(true)
+
+
+import { useToast } from '@/components/ui/toast/use-toast'
+const toast = useToast()
+
+// setTimeout(() => {
+apiClient.get('/test')
+	.then((response) => {
+		if (response.status === 200) {
+			toast.toast({
+				title: 'Servidor en linea 🚀​🤑​🤖​​',
+				duration: 2000,
+
+				// description: 'Inicio de sesión exitoso.',
+			})
+		} else {
+			toast.toast({
+				title: 'Servidor offline ',
+				description: response.data.message || 'Error al iniciar sesión',
+				variant: 'destructive',
+			})
+		}
+	})
+	.catch((error) => {
+		toast.toast({
+			title: 'Error',
+			description: error.response?.data?.message || error.response?.data || 'No se pudo iniciar sesión. Inténtalo de nuevo.',
+			variant: 'destructive',
+		})
+	})
+// }, 3000)
 
 </script>
 
 <template>
-  <div :class="{ dark: isDarkMode }" class="min-h-screen bg-background text-foreground">
-    <Toaster />
-    <router-view />
-  </div>
+	<div :class="{ dark: isDarkMode }" class="min-h-screen bg-background text-foreground">
+		<Toaster />
+		<router-view />
+	</div>
 </template>
 
 <!-- <style scoped>

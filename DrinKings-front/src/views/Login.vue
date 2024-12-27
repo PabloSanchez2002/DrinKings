@@ -55,6 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
                 toast({
                     title: '¡Bienvenido!',
                     description: 'Inicio de sesión exitoso.',
+                    duration: 2000,
                 })
                 router.push('/home') // Adjust the route as needed
             } else {

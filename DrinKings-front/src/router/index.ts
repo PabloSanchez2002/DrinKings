@@ -17,8 +17,8 @@ const routes = [
     component: Home, // Component to render
     meta: { requiresAuth: true },
     children: [
-      {path: 'profile', component: Profile,},
-      {path: 'league/:id', component: Liga,},
+      { path: 'profile', component: Profile,},
+      { path: 'league/:id', component: Liga,},
     ]
   },
   {

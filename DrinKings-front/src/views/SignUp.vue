@@ -50,6 +50,7 @@ const onSubmit = handleSubmit(async (values) => {
                 toast({
                     title: '¡Bienvenido!',
                     description: 'Tu cuenta se ha creado correctamente.',
+                    duration: 2000,
                 })
                 router.push('login')
             } else {
