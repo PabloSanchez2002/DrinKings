@@ -1,4 +1,31 @@
 <script>
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import apiClient from '@/services/apiClient';
+import { ref } from 'vue';
+
+
+export default {
+    mounted() {
+        // Access the leagueId from the route parameters
+        const leagueId = this.$route.params.id;
+        console.log('League ID:', leagueId);
+    }
+}
+
+const leagueId = ref(1);
+const getLeague = async (id) => {
+    apiClient.get(`/league/${id}`)
+        .then(response => {
+            console.log('League fetched successfully:', response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching league:', error);
+        });
+}
+
+getLeague(leagueId.value);
+
 </script>
 
 <template>

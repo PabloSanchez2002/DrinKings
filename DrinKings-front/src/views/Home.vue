@@ -20,8 +20,10 @@ import { useToast } from '@/components/ui/toast/use-toast'
 const { toast } = useToast()
 const token = localStorage.getItem('auth_token');
 const userName = ref('');
-// const leagueName = ref('');
-// const leagueDescription = ref('');
+const isCreateDialogOpen = ref(false);
+const isJoinDialogOpen = ref(false);
+const isSheetOpen = ref(false);
+
 interface League {
 	id: number;
 	name: string;
@@ -83,57 +85,78 @@ const logout = () => {
 }
 
 const goToLeague = (leagueId: number) => {
-	// Use router.push to redirect to the league's page
-	console.log('Going to league:', leagueId);
-	router.push(`/league/${leagueId}`);
+	router.push(`/home/league/${leagueId}`);
+	isSheetOpen.value = false;
 }
 
 const onSubmit = handleSubmit(async (values) => {
 	isLoading.value = true
-	try {
-		console.log('Form submitted with:', values)
 
-		const response = await apiClient.post('/league', values, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
+	console.log('Form submitted with:', values)
+
+	apiClient.post('/league', values, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	}).then((response) => {
+		if (response.status === 200) {
+			toast({
+				title: 'Éxito',
+				description: 'Liga ' + response.data.name + ' creada correctamente.',
+				duration: 2000,
+			})
+			joinLeague(response.data.shareToken)
+			reloadLeagues()
+			goToLeague(response.data.id)
+			isCreateDialogOpen.value = false
+		}
+		else {
+			toast({
+				title: 'Error',
+				description: response.data.message || 'Error al crear la liga',
+				variant: 'destructive',
+			})
+		}
+	}).catch(error => {
 		toast({
-			title: 'Éxito',
-			description: 'Liga ' + response.data.name + ' creada correctamente.',
-			duration: 2000,
+			title: 'Error',
+			description: error.response.data.message || 'No se pudo crear la liga. Inténtalo de nuevo.',
+			variant: 'destructive',
 		})
-		console.log('League created:', response.data)
-		console.log('Token:', response.data.shareToken)
-
-		joinLeague(response.data.shareToken)
-		reloadLeagues()
-		goToLeague(response.data.id)
-
-	} catch (error) {
-		// toast({
-		// 	title: 'Error',
-		// 	description: 'No se pudo crear la liga. Inténtalo de nuevo.',
-		// 	variant: 'destructive',
-		// })
-	} finally {
+	}).finally(() => {
 		isLoading.value = false
-	}
+	})
+
 })
 
 
 const joinLeague = async (shareToken: any) => {
 	// Implement the joinLeague function
-	try {
-		const response = await apiClient.post('/league/join', { shareToken }, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		console.log('League joined:', response.data)
-	} catch (error) {
-		console.error('Error joining league:', error)
-	}
+	apiClient.post('/league/join', { shareToken }, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => {
+			toast({
+				title: 'Éxito',
+				description: 'UNido a liga ' + response.data.name + ' correctamente.',
+				duration: 2000,
+			})
+			reloadLeagues()
+			goToLeague(response.data.id)
+			isJoinDialogOpen.value = false
+		})
+		.catch((error) => {
+			toast({
+				title: 'Error',
+				description: error.response.data.message || 'No se pudo unir a la liga. Inténtalo de nuevo.',
+				variant: 'destructive',
+			})
+		})
+		.finally(() => {
+			// isLoading.value = false
+		})
 }
 
 </script>
@@ -141,7 +164,7 @@ const joinLeague = async (shareToken: any) => {
 <template>
 	<div class="flex min-h-screen w-full flex-col">
 		<header class="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-			<Sheet>
+			<Sheet v-model:open="isSheetOpen">
 				<SheetTrigger as-child>
 					<Button variant="outline" size="icon" class="shrink-0 h-12 w-12">
 						<Beer class="h-10 w-10" />
@@ -156,14 +179,14 @@ const joinLeague = async (shareToken: any) => {
 
 						<div v-for="league in userLeagues" :key="league.id">
 							<a href="#" class="text-muted-foreground hover:text-foreground"
-								@click="goToLeague(league.id)">
+								@click.prevent="goToLeague(league.id)">
 								{{ league.name }}
 							</a>
 						</div>
 
 						<div class="flex flex-col gap-2">
 							<!-- DialogTrigger for Crea una liga -->
-							<Dialog>
+							<Dialog v-model:open="isCreateDialogOpen">
 								<DialogTrigger as-child>
 									<a href="#"
 										class="text-muted-foreground hover:text-foreground flex items-center gap-2">
@@ -219,7 +242,7 @@ const joinLeague = async (shareToken: any) => {
 							</Dialog>
 
 							<!-- DialogTrigger for Únete a una liga -->
-							<Dialog>
+							<Dialog v-model:open="isJoinDialogOpen">
 								<DialogTrigger as-child>
 									<a href="#"
 										class="text-muted-foreground hover:text-foreground flex items-center gap-2">
@@ -248,8 +271,8 @@ const joinLeague = async (shareToken: any) => {
 										<!-- Cancel Button with Dialog.Close -->
 										<DialogClose as-child>
 											<Button variant="outline">Cancel</Button>
-											<Button type="submit">Unete a la liga!</Button>
 										</DialogClose>
+										<Button type="submit">Unete a la liga!</Button>
 									</DialogFooter>
 								</DialogContent>
 							</Dialog>
