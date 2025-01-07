@@ -2278,3 +2278,6 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: /home/pablo.sanc
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 61 more
+2024-12-31 15:34:34.307593+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LEAGUE_ID" not found; SQL statement:
+SELECT * FROM LEAGUE_ID [42102-232]

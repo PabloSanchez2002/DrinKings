@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -90,13 +91,18 @@ public class UserService {
 
         // Add the user to the league and set the role (you can also have an enum for
         // roles)
-        league.getUsers().add(user);
+        // league.getUsers().add(user);
         user.getLeagues().add(league);
 
         userRepository.save(user);
         leagueRepository.save(league);
 
         return user;
+    }
+
+    public Set<League> getLeaguesOfUser(int userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        return user.getLeagues();
     }
 
 }

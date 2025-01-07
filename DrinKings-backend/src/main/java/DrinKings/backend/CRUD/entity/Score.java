@@ -9,6 +9,8 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Setter
 @Getter
@@ -24,10 +26,12 @@ public class Score {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "league_id", nullable = false)
+    @JsonIgnore
     private League league;
 
     private Integer score;

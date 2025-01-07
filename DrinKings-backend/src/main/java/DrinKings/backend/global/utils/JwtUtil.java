@@ -52,13 +52,18 @@ public class JwtUtil {
         return extractClaims(token).getSubject();
     }
 
-    public static boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
+    public static Boolean validateToken(String token) {
+        return isTokenValid(token);
+    }
+
+    public static boolean isTokenValid(String token) {
+        Date expiration = extractClaims(token).getExpiration();
+        return expiration == null || expiration.before(new Date());
     }
 
     public static boolean validateTokenUsername(String token, String username) {
         Claims claims = extractClaims(token);
-        return username.equals(claims.getSubject()) && !isTokenExpired(token);
+        return username.equals(claims.getSubject()) && isTokenValid(token);
     }
 
 }

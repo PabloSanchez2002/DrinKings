@@ -3,6 +3,8 @@ package DrinKings.backend.CRUD.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
@@ -31,6 +33,7 @@ public class League {
     @ManyToMany
     @JoinTable(name = "user_league", joinColumns = @JoinColumn(name = "league_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "league")

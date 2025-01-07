@@ -20,13 +20,13 @@
                     <CardContent class="flex flex-col gap-4">
                         <div class="flex justify-between gap-2 my-4">
                             <Button variant="secondary" class="p-0 w-24 h-24 rounded-lg">
-                                <img src="/cubata.jpg" alt="Cubata" class="rounded-lg w-20 " />
+                                <img src="/items/cubata.jpg" alt="Cubata" class="rounded-lg w-20 " />
                             </Button>
                             <Button variant="secondary" class="p-0 w-24 h-24 rounded-lg">
-                                <img src="/tercio.png" alt="Tercio" class="rounded-lg h-24" />
+                                <img src="/items/tercio.png" alt="Tercio" class="rounded-lg h-24" />
                             </Button>
                             <Button variant="secondary" class="p-0 w-24 h-24 rounded-lg">
-                                <img src="/tercio.png" alt="Cubata" class="rounded-lg h-20" />
+                                <img src="/items/tercio.png" alt="Cubata" class="rounded-lg h-20" />
                             </Button>
                         </div>
                     </CardContent>

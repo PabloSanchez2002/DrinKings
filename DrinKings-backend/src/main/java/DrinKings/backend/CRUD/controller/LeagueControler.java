@@ -34,8 +34,23 @@ public class LeagueControler {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<League> addLeague(@RequestBody LeagueDto leagueDto) {
-        return ResponseEntity.ok(leagueService.addLeague(leagueDto));
+    public ResponseEntity<?> addLeague(
+            @RequestHeader(value = "Authorization", required = true) String authorizationHeader,
+            @RequestBody LeagueDto leagueDto) throws ResourceNotFoundException {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // Extract the token by removing "Bearer " prefix
+            String token = authorizationHeader.substring(7);
+
+            if (JwtUtil.validateToken(token)) {
+                return ResponseEntity.ok(leagueService.addLeague(leagueDto));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid token!");
+
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Missing Bearer token!");
+        }
     }
 
     @GetMapping("/{id}")

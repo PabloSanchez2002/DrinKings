@@ -126,6 +126,27 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
+    @GetMapping("/getLeaguesOfUser")
+    public ResponseEntity<?> getLeaguesOfUser(
+            @RequestHeader(value = "Authorization", required = true) String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // Extract the token by removing "Bearer " prefix
+            String token = authorizationHeader.substring(7);
+
+            // Extract the username from the token
+            String username = JwtUtil.extractUsername(token);
+            try {
+                User user = userService.getUserByUsername(username);
+                return ResponseEntity.ok(userService.getLeaguesOfUser(user.getId()));
+            } catch (ResourceNotFoundException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No Bearer token provided!");
+        }
+    }
+
     // @PostMapping("/login")
     // public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest,
     // HttpServletResponse response)

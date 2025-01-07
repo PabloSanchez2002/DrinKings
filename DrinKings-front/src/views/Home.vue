@@ -1,19 +1,62 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CircleUser, Beer } from 'lucide-vue-next'
+import { CircleUser, Beer, LoaderCircle } from 'lucide-vue-next'
 import { CirclePlus, SquarePlus } from 'lucide-vue-next';
 import { useRouter } from 'vue-router'
 import { jwtDecode } from 'jwt-decode';
 import { ref } from 'vue';
+import apiClient from '@/services/apiClient'
+import { toTypedSchema } from '@vee-validate/zod'
+import { z } from 'zod'
+import { useForm } from 'vee-validate'
+import { useToast } from '@/components/ui/toast/use-toast'
 
+const { toast } = useToast()
 const token = localStorage.getItem('auth_token');
 const userName = ref('');
+// const leagueName = ref('');
+// const leagueDescription = ref('');
+interface League {
+	id: number;
+	name: string;
+	// Add other properties if needed
+}
+const userLeagues = ref<League[]>([]);
 const router = useRouter()
+const isLoading = ref(false)
+
+// Validation schema
+const formSchema = toTypedSchema(
+	z.object({
+		name: z.string().min(3, { message: 'El nombre debe de ser de 3 o mas caracteres' }),
+		description: z.string().min(3, { message: 'La descripción es requerida' }),
+	})
+)
+
+const { handleSubmit, isFieldDirty } = useForm({
+	validationSchema: formSchema,
+})
+
+const reloadLeagues = () => {
+	apiClient.get('/user/getLeaguesOfUser', {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	})
+		.then(response => {
+			userLeagues.value = response.data;
+			console.log('User leagues fetched successfully:', userLeagues.value);
+		})
+		.catch(error => {
+			console.error('Error fetching user leagues:', error);
+		});
+}
 
 
 if (token) {
@@ -22,6 +65,10 @@ if (token) {
 
 	userName.value = decodedToken?.sub;
 	console.log(`Welcome, ${userName.value}`);
+
+	// Fetch user leagues
+	reloadLeagues();
+
 } else {
 	console.log('No token found');
 }
@@ -35,22 +82,58 @@ const logout = () => {
 	router.push('/access/login')
 }
 
-const createLeague = () => {
-	console.log('Creating league');
-	// import axios from 'axios';
+const goToLeague = (leagueId: number) => {
+	// Use router.push to redirect to the league's page
+	console.log('Going to league:', leagueId);
+	router.push(`/league/${leagueId}`);
+}
 
-	// const leagueData = {
-	// 	name: 'Liga1',
-	// 	description: 'Liga prueba EDIT4'
-	// };
+const onSubmit = handleSubmit(async (values) => {
+	isLoading.value = true
+	try {
+		console.log('Form submitted with:', values)
 
-	// axios.post('/league', leagueData)
-	// 	.then(response => {
-	// 		console.log('League created successfully:', response.data);
-	// 	})
-	// 	.catch(error => {
-	// 		console.error('Error creating league:', error);
-	// 	});
+		const response = await apiClient.post('/league', values, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		toast({
+			title: 'Éxito',
+			description: 'Liga ' + response.data.name + ' creada correctamente.',
+			duration: 2000,
+		})
+		console.log('League created:', response.data)
+		console.log('Token:', response.data.shareToken)
+
+		joinLeague(response.data.shareToken)
+		reloadLeagues()
+		goToLeague(response.data.id)
+
+	} catch (error) {
+		// toast({
+		// 	title: 'Error',
+		// 	description: 'No se pudo crear la liga. Inténtalo de nuevo.',
+		// 	variant: 'destructive',
+		// })
+	} finally {
+		isLoading.value = false
+	}
+})
+
+
+const joinLeague = async (shareToken: any) => {
+	// Implement the joinLeague function
+	try {
+		const response = await apiClient.post('/league/join', { shareToken }, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		console.log('League joined:', response.data)
+	} catch (error) {
+		console.error('Error joining league:', error)
+	}
 }
 
 </script>
@@ -71,9 +154,12 @@ const createLeague = () => {
 							<p>Tus ligas</p>
 						</div>
 
-						<a href="#" class="text-muted-foreground hover:text-foreground">
-							Liga Leyendas
-						</a>
+						<div v-for="league in userLeagues" :key="league.id">
+							<a href="#" class="text-muted-foreground hover:text-foreground"
+								@click="goToLeague(league.id)">
+								{{ league.name }}
+							</a>
+						</div>
 
 						<div class="flex flex-col gap-2">
 							<!-- DialogTrigger for Crea una liga -->
@@ -93,27 +179,40 @@ const createLeague = () => {
 											Complete los campos para crear una nueva liga.
 										</DialogDescription>
 									</DialogHeader>
-									<form @submit.prevent="createLeague()" class="w-full">
-										<div class="grid gap-4 py-4">
-											<!-- Name Field -->
+									<form @submit="onSubmit" class="w-90 mx-auto space-y-3">
+										<!-- Name Field -->
+										<FormField v-slot="{ componentField }" name="name"
+											:validate-on-blur="!isFieldDirty">
 											<div class="grid grid-cols-4 items-center gap-4">
 												<Label for="name" class="text-right">Nombre</Label>
-												<Input id="name" placeholder="Nombre de la liga" class="col-span-3" />
+												<FormControl>
+													<Input id="name" placeholder="Nombre de la liga" class="col-span-3"
+														v-bind="componentField" />
+												</FormControl>
+												<FormMessage class="col-span-4 text-sm text-red-500" />
 											</div>
-											<!-- Password Field -->
+										</FormField>
+										<!-- Description Field -->
+										<FormField v-slot="{ componentField }" name="description"
+											:validate-on-blur="!isFieldDirty">
 											<div class="grid grid-cols-4 items-center gap-4">
 												<Label for="description" class="text-right">Descripción</Label>
-												<Input id="description" placeholder="Descripción" class="col-span-3" />
+												<FormControl>
+													<Input id="description" placeholder="Descripción" class="col-span-3"
+														v-bind="componentField" />
+												</FormControl>
+												<FormMessage class="col-span-4 text-sm text-red-500" />
 											</div>
-										</div>
+										</FormField>
 										<!-- Form Footer -->
 										<DialogFooter class="gap-4">
 											<DialogClose as-child>
 												<Button variant="outline">Cancel</Button>
 											</DialogClose>
-											<DialogClose as-child>
-												<Button type="submit">Crear una liga!</Button>
-											</DialogClose>
+											<Button type="submit" :disabled="isLoading">
+												<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
+												Crear una liga!
+											</Button>
 										</DialogFooter>
 									</form>
 								</DialogContent>
