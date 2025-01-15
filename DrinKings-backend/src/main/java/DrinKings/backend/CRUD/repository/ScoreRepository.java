@@ -10,6 +10,8 @@ import java.time.LocalDate;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Integer> {
 
+    Iterable<Score> findByLeagueId(int leagueId);
+
     Iterable<Score> findByLeagueIdAndUserId(int leagueId, int userId);
 
     Score findByDateAndUserIdAndLeagueId(LocalDate date, Integer userId, Integer leagueId);

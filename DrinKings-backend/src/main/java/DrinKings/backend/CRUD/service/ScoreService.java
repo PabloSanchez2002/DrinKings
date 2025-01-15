@@ -45,8 +45,16 @@ public class ScoreService {
         return scoreRepository.save(score);
     }
 
+    public Score updateScore(Score score) {
+        return scoreRepository.save(score);
+    }
+
     public Iterable<Score> getScoresByLeague(int leagueId, int userId) {
         return scoreRepository.findByLeagueIdAndUserId(leagueId, userId);
+    }
+
+    public Iterable<Score> getAllScoresByLeague(int leagueId) {
+        return scoreRepository.findByLeagueId(leagueId);
     }
 
     public Score findScoreByDateAndUserIdAndLeagueId(LocalDate date, int userId, int leagueId) {
