@@ -105,4 +105,9 @@ public class UserService {
         return user.getLeagues();
     }
 
+    public boolean isUserInLeague(String username, int leagueId) {
+        User user = userRepository.findByUsername(username).orElseThrow();
+        return user.getLeagues().stream().anyMatch(league -> league.getId() == leagueId);
+    }
+
 }

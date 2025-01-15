@@ -49,4 +49,8 @@ public class ScoreService {
         return scoreRepository.findByLeagueIdAndUserId(leagueId, userId);
     }
 
+    public Score findScoreByDateAndUserIdAndLeagueId(LocalDate date, int userId, int leagueId) {
+        return scoreRepository.findByDateAndUserIdAndLeagueId(date, userId, leagueId);
+    }
+
 }

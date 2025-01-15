@@ -54,8 +54,22 @@ public class LeagueControler {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<League> getLeagueById(@PathVariable("id") int id) {
-        return ResponseEntity.ok(leagueService.getLeagueById(id));
+    public ResponseEntity<?> getLeagueById(
+            @RequestHeader(value = "Authorization", required = true) String authorizationHeader,
+            @PathVariable("id") int id) {
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            String token = authorizationHeader.substring(7);
+
+            if (JwtUtil.validateToken(token)) {
+                return ResponseEntity.ok(leagueService.getLeagueById(id));
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid token!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No Bearer token provided!");
+        }
     }
 
     @PostMapping("/{id}")

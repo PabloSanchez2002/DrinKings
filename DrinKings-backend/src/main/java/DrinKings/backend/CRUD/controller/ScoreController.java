@@ -2,6 +2,7 @@ package DrinKings.backend.CRUD.controller;
 
 import DrinKings.backend.CRUD.service.ScoreService;
 import DrinKings.backend.CRUD.service.UserService;
+import DrinKings.backend.global.dto.NewScore;
 import DrinKings.backend.global.exceptions.ResourceNotFoundException;
 import DrinKings.backend.global.utils.JwtUtil;
 import DrinKings.backend.CRUD.dto.ScoreDto;
@@ -35,9 +36,59 @@ public class ScoreController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<String> addScore(@RequestBody ScoreDto score) {
-        scoreService.addScore(score);
-        return ResponseEntity.ok("Score added successfully");
+    public ResponseEntity<String> addScore(
+            @RequestHeader(value = "Authorization", required = true) String authorizationHeader,
+            @RequestBody NewScore score) throws ResourceNotFoundException {
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // Extract the token by removing "Bearer " prefix
+            String token = authorizationHeader.substring(7);
+
+            // Extract the username from the token
+            String username = JwtUtil.extractUsername(token);
+
+            if (score.getScore() < 0 || score.getScore() > 100) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Score must be between 0 and 100!");
+            }
+
+            if (!userService.isUserInLeague(username, score.getLeagueId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("User is not participating in this league!");
+            }
+
+            User user = userService.getUserByUsername(username);
+            Score existingScore = scoreService.findScoreByDateAndUserIdAndLeagueId(score.getDate(), user.getId(), score.getLeagueId());
+            
+            if (existingScore != null) {
+                existingScore.setScore(existingScore.getScore() + score.getScore());
+                scoreService.updateScore(existingScore);
+            } else {
+                Score newScore = new Score();
+                newScore.setUserId(user.getId());
+                newScore.setLeagueId(score.getLeagueId());
+                newScore.setScore(score.getScore());
+                newScore.setDate(score.getDate());
+                scoreService.addScore(newScore);
+            }
+            if (existingScore != null) {
+
+            ScoreDto scoreDto = ScoreDto.builder()
+                    .userId(user.getId())
+                    .leagueId(score.getLeagueId())
+                    .score(score.getScore())
+                    .date(score.getDate())
+                    .build();
+
+            scoreService.addScore(scoreDto);
+            return ResponseEntity.ok("Score added successfully");
+
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No Bearer token provided!");
+        }
+        // scoreService.addScore(score);
+        // return ResponseEntity.ok("Score added successfully");
     }
 
     @GetMapping("/getScoresByLeague/{leagueId}")

@@ -1,1 +1,2 @@
-uaurio ""
+
+una liga que no perteneces, redirect to error page
