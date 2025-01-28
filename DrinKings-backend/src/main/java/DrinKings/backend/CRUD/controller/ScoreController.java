@@ -167,7 +167,7 @@ public class ScoreController {
     }
 
     @GetMapping("/getTotalScoresByLeague/{leagueId}")
-    public ResponseEntity<String> getTotalScoreByLeague(
+    public ResponseEntity<?> getTotalScoreByLeague(
             @RequestHeader(value = "Authorization", required = true) String authorizationHeader,
             @PathVariable("leagueId") int leagueId) throws ResourceNotFoundException {
 
@@ -200,7 +200,7 @@ public class ScoreController {
                 totalScores.put(keyUsername, totalScores.getOrDefault(keyUsername, 0) + score.getScore());
             }
 
-            return ResponseEntity.ok(totalScores.toString());
+            return ResponseEntity.ok(totalScores);
 
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -3,6 +3,7 @@ import SignUp from '@/views/SignUp.vue';
 import Access from '@/views/Access.vue';
 import Login from '@/views/Login.vue';
 import Home from '@/views/Home.vue';
+import Landing from '@/views/Landing.vue';
 import Profile from '@/views/Profile.vue';
 import Liga from '@/views/Liga.vue';
 
@@ -17,6 +18,7 @@ const routes = [
     component: Home, // Component to render
     meta: { requiresAuth: true },
     children: [
+      { path: '', component: Landing,},
       { path: 'profile', component: Profile,},
       { path: 'league/:id', component: Liga,},
     ]

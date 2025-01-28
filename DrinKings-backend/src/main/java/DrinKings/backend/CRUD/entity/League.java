@@ -38,6 +38,7 @@ public class League {
 
     @OneToMany(mappedBy = "league")
     @Builder.Default
+    @JsonIgnore
     private Set<Score> scores = new HashSet<>();
 
 }
