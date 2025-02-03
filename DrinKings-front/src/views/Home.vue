@@ -93,6 +93,11 @@ const logout = () => {
 	router.push('/access/login')
 }
 
+const toProfile = () => {
+	console.log('Going to profile');
+	router.push('/home/profile')
+}
+
 const goToLeague = (leagueId: number) => {
 	router.push(`/home/league/${leagueId}`);
 	isSheetOpen.value = false;
@@ -353,11 +358,19 @@ const joinLeague = async (shareToken: any) => {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuLabel @click="router.push('profile')">Mi cuenta</DropdownMenuLabel>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem>Soporte</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem @click="logout">Logout</DropdownMenuItem>
+						<!-- <DropdownMenuLabel>
+
+						</DropdownMenuLabel> -->
+						<DropdownMenuItem @click="toProfile">
+							<Button variant="outline" class="w-full">Mi cuenta</Button>
+						</DropdownMenuItem>
+
+						<!-- <DropdownMenuSeparator /> -->
+						<!-- <DropdownMenuItem>Soporte</DropdownMenuItem>
+						<DropdownMenuSeparator /> -->
+						<DropdownMenuItem @click="logout">
+							<Button variant="destructive" class="w-full">Logout</Button>
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>

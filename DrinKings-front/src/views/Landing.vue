@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Button } from '@/components/ui/button'
+import { CircleUser, Beer, LoaderCircle } from 'lucide-vue-next'
 
 </script>
 
@@ -15,24 +18,61 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
                 </CardTitle>
                 <CardDescription>
                     <p class="text-lg">
-                        DrinKings es tu compañero definitivo para descubrir y compartir increíbles recetas de bebidas.
-                        Ya sea
-                        que seas un mixólogo experimentado o estés empezando, nuestra aplicación tiene algo para todos.
+                        DrinKings es aplicación para competir por la corona de rey de la bebida.
                     </p>
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <h2 class="text-2xl font-semibold">Cómo usar la aplicación</h2>
-                <ol class="list-decimal list-inside mt-4 space-y-2">
-                    <li>Explora nuestra amplia colección de recetas de bebidas.</li>
-                    <li>Guarda tus recetas favoritas en tu colección personal.</li>
-                    <li>Comparte tus propias recetas de bebidas con la comunidad.</li>
-                    <li>Califica y comenta las bebidas que has probado.</li>
-                </ol>
+
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger>¿Cómo se usa la aplicación?</AccordionTrigger>
+                        <AccordionContent>
+                            <ol class="list-decimal list-inside mt-4 space-y-2">
+                                <li>Haz click en el boton de la esquina superior izquierda </li>
+                                <Button variant="outline" size="sm" class="shrink-0 h-10 w-10">
+                                    <Beer class="h-8 w-8" />
+                                </Button>
+                                <li>Crea o únete a una liga con tus amigos.</li>
+                                ( •ᴗ•)⸝🍻⸜(•ᴗ• )
+                                <li>Anota las bebidas que consumas (no hagas trampas!).</li>
+                                <li>Dale al botón de
+                                    <Button variant="default" size="sm" class="shrink-0 h-6 w-14">
+                                        Guardar
+                                    </Button>.
+                                </li>
+                                <li>Las puntuaciones se actualizan, y se muestran según pasa el tiempo</li>
+                            </ol>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-2">
+                        <AccordionTrigger>¿Cómo crear/unirme a una liga?</AccordionTrigger>
+                        <AccordionContent>
+                            <ol class="list-decimal list-inside mt-4 space-y-2">
+                                <li>Haz click en el boton de la esquina superior izquierda </li>
+                                <Button variant="outline" size="sm" class="shrink-0 h-10 w-10">
+                                    <Beer class="h-8 w-8" />
+                                </Button>
+                                <li>Haz click en en crear o unete a una liga. 🍻</li>
+
+                                <li>Rellena el formulario (si te quieres unir a una liga, pídele el código a alguien).
+                                </li>
+                                <li>Todo listo!</li>
+                            </ol>
+                        </AccordionContent>
+                    </AccordionItem>
+                    <!-- <AccordionItem value="item-3">
+                        <AccordionTrigger>¿Como se usa la aplicación?</AccordionTrigger>
+                        <AccordionContent>
+                            Yes. It adheres to the WAI-ARIA design pattern.
+                        </AccordionContent>
+                    </AccordionItem> -->
+                </Accordion>
+
             </CardContent>
             <CardFooter>
                 <p class="text-sm text-gray-600">
-                    ¿Listo para empezar? ¡Regístrate o inicia sesión para comenzar a explorar!
+                    ¿Listo para empezar? ¡Unete a una liga y compite!
                 </p>
             </CardFooter>
         </Card>
@@ -43,8 +83,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
         </div>
 
         <!-- Sección de Pasos -->
-        <div class="steps mt-12 w-full max-w-4xl text-left">
-
+        <div class="text-sm text-gray-600 steps mt-12 w-full max-w-4xl text-center">
+            Version 1.0.0
         </div>
     </div>
 </template>

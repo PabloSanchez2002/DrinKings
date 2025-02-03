@@ -16,13 +16,11 @@ apiClient.get('/test')
 			toast.toast({
 				title: 'Servidor en linea 🚀​🤑​🤖​​',
 				duration: 2000,
-
-				// description: 'Inicio de sesión exitoso.',
 			})
 		} else {
 			toast.toast({
 				title: 'Servidor offline ',
-				description: response.data.message || 'Error al iniciar sesión',
+				description: response.data.message || 'Servidor offline 😢',
 				variant: 'destructive',
 			})
 		}
@@ -30,7 +28,7 @@ apiClient.get('/test')
 	.catch((error) => {
 		toast.toast({
 			title: 'Error',
-			description: error.response?.data?.message || error.response?.data || 'No se pudo iniciar sesión. Inténtalo de nuevo.',
+			description: error.response?.data?.message || error.response?.data || 'Servidor offline 😢',
 			variant: 'destructive',
 		})
 	})
