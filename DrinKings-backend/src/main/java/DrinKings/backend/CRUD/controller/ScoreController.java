@@ -12,8 +12,10 @@ import DrinKings.backend.global.utils.Tuple;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,50 +90,96 @@ public class ScoreController {
     }
 
     @GetMapping("/getAllScoresByLeague/{leagueId}")
-    public ResponseEntity<String> getAllScoresByLeague(
+    public ResponseEntity<Map<String, Object>> getAllScoresByLeague(
             @RequestHeader(value = "Authorization", required = true) String authorizationHeader,
             @PathVariable("leagueId") int leagueId) throws ResourceNotFoundException {
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            // Extract the token by removing "Bearer " prefix
-            String token = authorizationHeader.substring(7);
-
-            // Extract the username from the token
-            String username = JwtUtil.extractUsername(token);
-
-            if (!userService.isUserInLeague(username, leagueId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("User is not participating in this league!");
-            }
-
-            Iterable<Score> scores = scoreService.getAllScoresByLeague(leagueId);
-
-            List<Score> scoreList = new ArrayList<>();
-            scores.forEach(scoreList::add);
-
-            Map<String, List<Tuple<LocalDate, Integer>>> result = new HashMap<>();
-            Map<String, Integer> accumulatedScores = new HashMap<>();
-
-            for (Score score : scoreList) {
-                String keyUsername = score.getUser().getUsername();
-
-                if (!result.containsKey(keyUsername)) {
-                    result.put(keyUsername, new ArrayList<>());
-                    accumulatedScores.put(score.getUser().getUsername(), 0);
-                }
-
-                int accumulatedScore = accumulatedScores.get(score.getUser().getUsername()) + score.getScore();
-                accumulatedScores.put(score.getUser().getUsername(), accumulatedScore);
-
-                result.get(keyUsername).add(new Tuple<>(score.getDate(), accumulatedScore));
-            }
-
-            return ResponseEntity.ok(result.toString());
-
-        } else {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("No Bearer token provided!");
+                    .body(Map.of("error", "No Bearer token provided!"));
         }
+
+        String token = authorizationHeader.substring(7);
+        String username = JwtUtil.extractUsername(token);
+
+        if (!userService.isUserInLeague(username, leagueId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "User is not participating in this league!"));
+        }
+
+        Iterable<Score> scores = scoreService.getAllScoresByLeague(leagueId);
+        List<Score> scoreList = new ArrayList<>();
+        scores.forEach(scoreList::add);
+
+        if (scoreList.isEmpty()) {
+            return ResponseEntity.ok(Map.of("labels", List.of(), "datasets", List.of()));
+        }
+
+        // Step 1: Sort scores by date
+        scoreList.sort(Comparator.comparing(Score::getDate));
+
+        // Step 2: Generate a continuous list of dates from the first to the last score
+        LocalDate startDate = scoreList.get(0).getDate();
+        LocalDate endDate = scoreList.get(scoreList.size() - 1).getDate();
+        List<LocalDate> allDates = new ArrayList<>();
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            allDates.add(date);
+        }
+
+        // Step 3: Organize user scores
+        Map<String, List<Tuple<LocalDate, Integer>>> userScores = new HashMap<>();
+        for (Score score : scoreList) {
+            userScores.computeIfAbsent(score.getUser().getUsername(), k -> new ArrayList<>())
+                    .add(new Tuple<>(score.getDate(), score.getScore()));
+        }
+
+        // Step 4: Generate accumulated scores for each user
+        Map<String, List<Integer>> datasets = new HashMap<>();
+        for (String user : userScores.keySet()) {
+            List<Tuple<LocalDate, Integer>> rawScores = userScores.get(user);
+            List<Integer> accumulatedData = new ArrayList<>();
+            int lastScore = 0;
+
+            for (LocalDate date : allDates) {
+                // If there is a new score for this date, accumulate it
+                for (Tuple<LocalDate, Integer> entry : rawScores) {
+                    if (entry.getFirst().equals(date)) {
+                        lastScore += entry.getSecond();
+                        break;
+                    }
+                }
+                accumulatedData.add(lastScore);
+            }
+
+            datasets.put(user, accumulatedData);
+        }
+
+        // Step 5: Predefined color palette
+        List<String> colors = List.of(
+                "#42A5F5", "#66BB6A", "#FFA726", "#AB47BC", "#FF7043", "#26C6DA",
+                "#7E57C2", "#D4E157", "#FFCA28", "#EC407A", "#29B6F6", "#8D6E63",
+                "#EF5350", "#EC407A", "#AB47BC", "#7E57C2", "#5C6BC0", "#42A5F5",
+                "#26A69A", "#66BB6A", "#9CCC65", "#D4E157", "#FFEE58", "#FFCA28",
+                "#FFA726", "#FF7043", "#8D6E63", "#BDBDBD", "#78909C");
+
+        // Step 6: Build final JSON response for Chart.js
+        List<Map<String, Object>> datasetList = new ArrayList<>();
+        int colorIndex = 0;
+
+        for (String user : datasets.keySet()) {
+            datasetList.add(Map.of(
+                    "label", user,
+                    "data", datasets.get(user),
+                    "borderColor", colors.get(colorIndex % colors.size()), // Cycle through colors
+                    "fill", false));
+            colorIndex++;
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", allDates.stream().map(LocalDate::toString).toList());
+        response.put("datasets", datasetList);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getUserScoresByLeague/{leagueId}")

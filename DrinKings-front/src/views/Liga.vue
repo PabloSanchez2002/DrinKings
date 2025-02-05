@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
-import { LineChart } from '@/components/ui/chart-line'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
+import LineChart from "@/components/ui/LineChart.vue";
+import type { ChartData, ChartOptions } from "chart.js";
 import { Button } from '@/components/ui/button';
 import apiClient from '@/services/apiClient';
-import { Plus, Minus } from 'lucide-vue-next';
-import { h, onMounted, ref, watch } from 'vue';
+import { Plus, Minus, UserPlus, Share2 } from 'lucide-vue-next';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from '@/components/ui/toast/use-toast'
 import { jwtDecode } from 'jwt-decode';
@@ -46,15 +47,16 @@ const userScore = ref<number | null>(null);
 onMounted(() => {
     const leagueId = Number(route.params.id);
     if (token) {
-        if (leagueId) loadLeagueData(leagueId);
+        if (leagueId) {
+            loadLeagueData(leagueId);
+            getTotalScoresByLeague(leagueId);
+            getAllScoresByLeague(leagueId);
+        }
         // Decode the JWT
         const decodedToken: any = jwtDecode(token);
 
         userName.value = decodedToken?.sub;
         // console.log(`Welcome, ${userName.value}`);
-
-        // Fetch user leagues
-        getTotalScoresByLeague(leagueId);
 
     } else {
         console.log('No token found');
@@ -81,6 +83,7 @@ watch(() => route.params.id, (newLeagueId) => {
     if (newLeagueId) {
         loadLeagueData(Number(newLeagueId));
         getTotalScoresByLeague(Number(newLeagueId));
+        getAllScoresByLeague(Number(newLeagueId));
     }
 });
 
@@ -107,7 +110,7 @@ const saveScores = () => {
             Authorization: `Bearer ${token}`
         }
     })
-        .then(response => {
+        .then(() => {
             // console.log('Scores saved successfully:', response.data);
             toast({
                 title: 'Puntuación guardada! Se han añadido ' + score + ' puntos.',
@@ -150,7 +153,45 @@ const getTotalScoresByLeague = (leagueId: number) => {
         });
 };
 
+const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+        title: 'Código copiado al portapapeles 📋',
+        description: text,
+        duration: 1000,
+    });
+};
 
+const chartData = ref<ChartData<"line">>({
+    labels: [],
+    datasets: []
+});
+
+const getAllScoresByLeague = (leagueId: number) => {
+    apiClient.get(`/score/getAllScoresByLeague/${leagueId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            console.log('All scores fetched successfully:', response.data);
+            chartData.value.labels = response.data.labels;
+            chartData.value.datasets = response.data.datasets;
+        })
+        .catch(error => {
+            console.error('Error fetching all scores:', error);
+        });
+};
+
+const chartOptions = ref<ChartOptions<"line">>({
+    responsive: true,
+    maintainAspectRatio: false,
+    elements: {
+        point: {
+            radius: 0
+        }
+    }
+});
 
 </script>
 
@@ -158,7 +199,13 @@ const getTotalScoresByLeague = (leagueId: number) => {
     <main class="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
         <div class="mx-auto grid w-full max-w-6xl gap-2">
             <h1 class="text-3xl font-semibold">
-                {{ league?.name }}
+                <div class="flex justify-between items-center gap-2">
+                    <span>{{ league?.name }}</span>
+                    <Button variant="outline" size="lg" class="p-2" @click="copyToClipboard(league?.shareToken)">
+                        <Share2 style="width: 20px; height: 24px;" />
+                        {{ league?.shareToken }}
+                    </Button>
+                </div>
             </h1>
             <p class="text-lg">
                 {{ league?.description }}
@@ -269,8 +316,18 @@ const getTotalScoresByLeague = (leagueId: number) => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <!-- <LineChart :data="league?.scores" /> -->
+                        <LineChart :chartData="chartData" :chartOptions="chartOptions" />
                     </CardContent>
+                    <CardFooter>
+                        <div className="flex w-full items-start gap-2 text-sm">
+                            <div className="grid gap-2">
+
+                                <div className="flex items-center gap-2 leading-none text-muted-foreground">
+                                    Showing total visitors for the last 6 months
+                                </div>
+                            </div>
+                        </div>
+                    </CardFooter>
                 </Card>
             </div>
         </div>

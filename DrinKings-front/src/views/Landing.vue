@@ -23,7 +23,6 @@ import { CircleUser, Beer, LoaderCircle } from 'lucide-vue-next'
                 </CardDescription>
             </CardHeader>
             <CardContent>
-
                 <Accordion type="single" collapsible>
                     <AccordionItem value="item-1">
                         <AccordionTrigger>¿Cómo se usa la aplicación?</AccordionTrigger>
