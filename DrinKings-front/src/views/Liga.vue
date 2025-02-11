@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion"
 import LineChart from "@/components/ui/LineChart.vue";
 import type { ChartData, ChartOptions } from "chart.js";
 import { Button } from '@/components/ui/button';
 import apiClient from '@/services/apiClient';
-import { Plus, Minus, UserPlus, Share2 } from 'lucide-vue-next';
+import { Plus, Minus, LogOut, Share2 } from 'lucide-vue-next';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from '@/components/ui/toast/use-toast'
@@ -162,10 +163,31 @@ const copyToClipboard = (text: string) => {
     });
 };
 
-const chartData = ref<ChartData<"line">>({
-    labels: [],
-    datasets: []
-});
+const leaveLeague = () => {
+    const leagueId = league.value?.id;
+    if (leagueId) {
+        apiClient.post(`/leave/${leagueId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(() => {
+                toast({
+                    title: 'Has salido de la liga.',
+                    duration: 1000,
+                });
+                // Optionally, redirect the user or update the UI
+            })
+            .catch(error => {
+                console.error('Error leaving league:', error);
+                toast({
+                    title: 'Error',
+                    description: error.response.data || 'Error al salir de la liga',
+                    variant: 'destructive',
+                });
+            });
+    }
+}
 
 const getAllScoresByLeague = (leagueId: number) => {
     apiClient.get(`/score/getAllScoresByLeague/${leagueId}`, {
@@ -182,6 +204,11 @@ const getAllScoresByLeague = (leagueId: number) => {
             console.error('Error fetching all scores:', error);
         });
 };
+
+const chartData = ref<ChartData<"line">>({
+    labels: [],
+    datasets: []
+});
 
 const chartOptions = ref<ChartOptions<"line">>({
     responsive: true,
@@ -201,9 +228,13 @@ const chartOptions = ref<ChartOptions<"line">>({
             <h1 class="text-3xl font-semibold">
                 <div class="flex justify-between items-center gap-2">
                     <span>{{ league?.name }}</span>
-                    <Button variant="outline" size="lg" class="p-2" @click="copyToClipboard(league?.shareToken)">
+                    <Button variant="outline" size="lg" class="p-2"
+                        @click="league?.shareToken && copyToClipboard(league.shareToken)">
                         <Share2 style="width: 20px; height: 24px;" />
-                        {{ league?.shareToken }}
+                        <!-- {{ league?.shareToken }} -->
+                    </Button>
+                    <Button variant="outline" size="lg" class="p-2" @click=leaveLeague()>
+                        <LogOut style="width: 20px; height: 24px;" />
                     </Button>
                 </div>
             </h1>

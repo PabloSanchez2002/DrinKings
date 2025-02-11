@@ -117,7 +117,31 @@ public class LeagueControler {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("No Bearer token provided!");
         }
+    }
 
+    @GetMapping("/leave/{id}")
+    public ResponseEntity<String> leaveLeague(
+            @RequestHeader(value = "Authorization", required = true) String authorizationHeader,
+            @PathVariable("id") int leagueId) throws ResourceNotFoundException {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            // Extract the token by removing "Bearer " prefix
+            String token = authorizationHeader.substring(7);
+
+            // Extract the username from the token
+            String username = JwtUtil.extractUsername(token);
+
+            int userId = userService.getUserByUsername(username).getId();
+            boolean left = leagueService.leaveLeague(userId, leagueId);
+            if (left) {
+                return ResponseEntity.ok("User successfully left the league.");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("User is not part of this league.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No Bearer token provided!");
+        }
     }
 
 }

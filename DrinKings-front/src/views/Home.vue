@@ -224,15 +224,13 @@ const joinLeague = async (shareToken: any) => {
 					</Button>
 				</SheetTrigger>
 				<SheetContent side="left" class="h-full">
-					<nav class="h-full grid gap-6  font-medium">
+					<nav class="h-full flex flex-col gap-6  font-medium justify-between">
 						<!-- Title Section -->
-						<div class="flex gap-2 text-2xl font-semibold">
-							<Beer class="h-6 w-6" />
-							<p>Tus ligas</p>
-						</div>
-
-						<!-- Main Content -->
-						<div class="flex flex-col text-2xl font-semibold  justify-between">
+						<div class="flex flex-col gap-4">
+							<div class="flex gap-2 text-2xl font-semibold">
+								<Beer class="h-6 w-6" />
+								<p>Tus ligas</p>
+							</div>
 							<!-- Ligas -->
 							<div v-for="league in userLeagues" :key="league.id">
 								<a href="#" class="text-muted-foreground hover:text-foreground"
@@ -240,109 +238,110 @@ const joinLeague = async (shareToken: any) => {
 									{{ league.name }}
 								</a>
 							</div>
-							<!-- Dialog Container -->
-							<div class="flex flex-col gap-4">
-								<!-- DialogTrigger for Crea una liga -->
-								<Dialog v-model:open="isCreateDialogOpen">
-									<DialogTrigger as-child>
-										<a href="#"
-											class="text-muted-foreground hover:text-foreground flex items-center gap-2">
-											<CirclePlus class="h-7 w-7" />
-											Crea una liga
-										</a>
-									</DialogTrigger>
-									<DialogContent
-										class="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] max-w-none rounded-lg mx-auto p-6">
-										<DialogHeader>
-											<DialogTitle>Crea una nueva liga</DialogTitle>
-											<DialogDescription>
-												Complete los campos para crear una nueva liga.
-											</DialogDescription>
-										</DialogHeader>
-										<form @submit="onSubmitCreate" class="w-90 mx-auto space-y-3">
-											<!-- Name Field -->
-											<FormField v-slot="{ componentField }" name="name"
-												:validate-on-blur="!isFieldDirty">
-												<div class="grid grid-cols-4 items-center gap-4">
-													<Label for="name" class="text-right">Nombre</Label>
-													<FormControl>
-														<Input id="name" placeholder="Nombre de la liga"
-															class="col-span-3" v-bind="componentField" />
-													</FormControl>
-													<FormMessage class="col-span-4 text-sm text-red-500" />
-												</div>
-											</FormField>
-											<!-- Description Field -->
-											<FormField v-slot="{ componentField }" name="description"
-												:validate-on-blur="!isFieldDirty">
-												<div class="grid grid-cols-4 items-center gap-4">
-													<Label for="description" class="text-right">Descripción</Label>
-													<FormControl>
-														<Input id="description" placeholder="Descripción"
-															class="col-span-3" v-bind="componentField" />
-													</FormControl>
-													<FormMessage class="col-span-4 text-sm text-red-500" />
-												</div>
-											</FormField>
-											<!-- Form Footer -->
-											<DialogFooter class="gap-4">
-												<DialogClose as-child>
-													<Button variant="outline">Cancel</Button>
-												</DialogClose>
-												<Button type="submit" :disabled="isLoading">
-													<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
-													Crear una liga!
-												</Button>
-											</DialogFooter>
-										</form>
-									</DialogContent>
-								</Dialog>
+						</div>
 
-								<!-- DialogTrigger for Únete a una liga -->
-								<Dialog v-model:open="isJoinDialogOpen">
-									<DialogTrigger as-child>
-										<a href="#"
-											class="text-muted-foreground hover:text-foreground flex items-center gap-2">
-											<SquarePlus class="h-7 w-7" />
-											Únete a una liga
-										</a>
-									</DialogTrigger>
-									<DialogContent
-										class="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] max-w-none rounded-lg mx-auto p-6">
-										<DialogHeader>
-											<DialogTitle>Únete a una liga</DialogTitle>
-											<DialogDescription>
-												Introduzca el código de la liga para unirse.
-											</DialogDescription>
-										</DialogHeader>
-										<form @submit="onSubmitJoin" class="w-90 mx-auto space-y-3">
-											<!-- Share Token Field -->
-											<FormField v-slot="{ componentField }" name="shareToken"
-												:validate-on-blur="!isFieldDirtyJoin">
-												<div class="grid grid-cols-4 items-center gap-4">
-													<Label for="shareToken" class="text-right">Código</Label>
-													<FormControl>
-														<Input id="shareToken" placeholder="Código de la liga"
-															class="col-span-3" v-bind="componentField" />
-													</FormControl>
-													<FormMessage class="col-span-4 text-sm text-red-500" />
-												</div>
-											</FormField>
-											<!-- Form Footer -->
-											<DialogFooter class="gap-4">
-												<DialogClose as-child>
-													<Button variant="outline">Cancel</Button>
-												</DialogClose>
-												<Button type="submit" :disabled="isLoading">
-													<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
-													Únete a la liga!
-												</Button>
-											</DialogFooter>
-										</form>
-									</DialogContent>
-								</Dialog>
-							</div>
+						<!-- Main Content -->
+						<!-- Dialog Container -->
+						<div class="flex flex-col gap-4">
+							<!-- DialogTrigger for Crea una liga -->
+							<Dialog v-model:open="isCreateDialogOpen">
+								<DialogTrigger as-child>
+									<a href="#"
+										class="text-muted-foreground hover:text-foreground flex items-center gap-2">
+										<CirclePlus class="h-7 w-7" />
+										Crea una liga
+									</a>
+								</DialogTrigger>
+								<DialogContent
+									class="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] max-w-none rounded-lg mx-auto p-6">
+									<DialogHeader>
+										<DialogTitle>Crea una nueva liga</DialogTitle>
+										<DialogDescription>
+											Complete los campos para crear una nueva liga.
+										</DialogDescription>
+									</DialogHeader>
+									<form @submit="onSubmitCreate" class="w-90 mx-auto space-y-3">
+										<!-- Name Field -->
+										<FormField v-slot="{ componentField }" name="name"
+											:validate-on-blur="!isFieldDirty">
+											<div class="grid grid-cols-4 items-center gap-4">
+												<Label for="name" class="text-right">Nombre</Label>
+												<FormControl>
+													<Input id="name" placeholder="Nombre de la liga" class="col-span-3"
+														v-bind="componentField" />
+												</FormControl>
+												<FormMessage class="col-span-4 text-sm text-red-500" />
+											</div>
+										</FormField>
+										<!-- Description Field -->
+										<FormField v-slot="{ componentField }" name="description"
+											:validate-on-blur="!isFieldDirty">
+											<div class="grid grid-cols-4 items-center gap-4">
+												<Label for="description" class="text-right">Descripción</Label>
+												<FormControl>
+													<Input id="description" placeholder="Descripción" class="col-span-3"
+														v-bind="componentField" />
+												</FormControl>
+												<FormMessage class="col-span-4 text-sm text-red-500" />
+											</div>
+										</FormField>
+										<!-- Form Footer -->
+										<DialogFooter class="gap-4">
+											<DialogClose as-child>
+												<Button variant="outline">Cancel</Button>
+											</DialogClose>
+											<Button type="submit" :disabled="isLoading">
+												<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
+												Crear una liga!
+											</Button>
+										</DialogFooter>
+									</form>
+								</DialogContent>
+							</Dialog>
 
+							<!-- DialogTrigger for Únete a una liga -->
+							<Dialog v-model:open="isJoinDialogOpen">
+								<DialogTrigger as-child>
+									<a href="#"
+										class="text-muted-foreground hover:text-foreground flex items-center gap-2">
+										<SquarePlus class="h-7 w-7" />
+										Únete a una liga
+									</a>
+								</DialogTrigger>
+								<DialogContent
+									class="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] max-w-none rounded-lg mx-auto p-6">
+									<DialogHeader>
+										<DialogTitle>Únete a una liga</DialogTitle>
+										<DialogDescription>
+											Introduzca el código de la liga para unirse.
+										</DialogDescription>
+									</DialogHeader>
+									<form @submit="onSubmitJoin" class="w-90 mx-auto space-y-3">
+										<!-- Share Token Field -->
+										<FormField v-slot="{ componentField }" name="shareToken"
+											:validate-on-blur="!isFieldDirtyJoin">
+											<div class="grid grid-cols-4 items-center gap-4">
+												<Label for="shareToken" class="text-right">Código</Label>
+												<FormControl>
+													<Input id="shareToken" placeholder="Código de la liga"
+														class="col-span-3" v-bind="componentField" />
+												</FormControl>
+												<FormMessage class="col-span-4 text-sm text-red-500" />
+											</div>
+										</FormField>
+										<!-- Form Footer -->
+										<DialogFooter class="gap-4">
+											<DialogClose as-child>
+												<Button variant="outline">Cancel</Button>
+											</DialogClose>
+											<Button type="submit" :disabled="isLoading">
+												<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
+												Únete a la liga!
+											</Button>
+										</DialogFooter>
+									</form>
+								</DialogContent>
+							</Dialog>
 						</div>
 					</nav>
 				</SheetContent>

@@ -86,4 +86,27 @@ public class LeagueService {
         return true; // User successfully joined the league
     }
 
+    public boolean leaveLeague(Integer userId, Integer leagueId) {
+        // Step 2: Retrieve the league by id
+        League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
+
+        // Step 3: Retrieve the user
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Step 4: Check if the user is part of the league
+        if (!user.getLeagues().contains(league)) {
+            return false; // User is not part of the league
+        }
+
+        // Step 5: Remove the user from the league
+        user.getLeagues().remove(league);
+        league.getUsers().remove(user);
+
+        // Step 6: Save the user and league to persist the changes
+        userRepository.save(user);
+        leagueRepository.save(league);
+
+        return true; // User successfully left the league
+    }
+
 }
