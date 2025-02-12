@@ -2,13 +2,14 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from "@/components/ui/alert-dialog"
 import LineChart from "@/components/ui/LineChart.vue";
 import type { ChartData, ChartOptions } from "chart.js";
 import { Button } from '@/components/ui/button';
 import apiClient from '@/services/apiClient';
 import { Plus, Minus, LogOut, Share2 } from 'lucide-vue-next';
 import { onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from '@/components/ui/toast/use-toast'
 import { jwtDecode } from 'jwt-decode';
 
@@ -27,21 +28,19 @@ interface League {
     scores: Score[];
 }
 
-// interface TotalScore {
-//     username: string;
-//     totalScore: number;
-// }
-
 // Reactive data
 const league = ref<League | null>(null);
 const userName = ref<string | null>(null);
 const token = localStorage.getItem('auth_token');
 const route = useRoute();
+const router = useRouter();
 const { toast } = useToast();
 
 // Counter data for each button
 const counters = ref<number[]>([0, 0, 0]);
-const points = [10, 7, 3]; // Points associated with each button
+const countersExtra = ref<number[]>([0, 0]);
+const points = [10, 4, 2]; // Points associated with each button
+const pointsExtra = [12, 8]
 const totalScores = ref<{ [key: string]: number }>({});
 const userScore = ref<number | null>(null);
 
@@ -121,6 +120,7 @@ const saveScores = () => {
             counters.value = [0, 0, 0];
             if (leagueId) {
                 getTotalScoresByLeague(leagueId)
+                getAllScoresByLeague(leagueId);
             }
 
 
@@ -165,8 +165,9 @@ const copyToClipboard = (text: string) => {
 
 const leaveLeague = () => {
     const leagueId = league.value?.id;
+
     if (leagueId) {
-        apiClient.post(`/leave/${leagueId}`, {
+        apiClient.get(`/league/leave/${leagueId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -177,6 +178,7 @@ const leaveLeague = () => {
                     duration: 1000,
                 });
                 // Optionally, redirect the user or update the UI
+                router.push('/home');
             })
             .catch(error => {
                 console.error('Error leaving league:', error);
@@ -190,24 +192,30 @@ const leaveLeague = () => {
 }
 
 const getAllScoresByLeague = (leagueId: number) => {
-    apiClient.get(`/score/getAllScoresByLeague/${leagueId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
-        .then(response => {
-            console.log('All scores fetched successfully:', response.data);
-            chartData.value.labels = response.data.labels;
-            chartData.value.datasets = response.data.datasets;
+    apiClient
+        .get(`/score/getAllScoresByLeague/${leagueId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         })
-        .catch(error => {
-            console.error('Error fetching all scores:', error);
+        .then((response) => {
+            console.log("All scores fetched successfully:", response.data);
+
+            const { labels, datasets } = response.data;
+
+            chartData.value = {
+                labels: labels,
+                datasets: datasets,
+            };
+        })
+        .catch((error) => {
+            console.error("Error fetching all scores:", error);
         });
 };
 
 const chartData = ref<ChartData<"line">>({
-    labels: [],
-    datasets: []
+    "labels": [], // Array of strings
+    "datasets": [], // Array of dataset objects
 });
 
 const chartOptions = ref<ChartOptions<"line">>({
@@ -217,7 +225,25 @@ const chartOptions = ref<ChartOptions<"line">>({
         point: {
             radius: 0
         }
-    }
+    },
+    datasets: {
+        line: {
+            tension: 0.4,
+        }
+    },
+    scales: {
+        y: {
+            min: 0,
+            max: 150
+        }
+    },
+    plugins: {
+        legend: {
+            display: true,
+            position: 'bottom'
+        }
+    },
+
 });
 
 </script>
@@ -226,18 +252,44 @@ const chartOptions = ref<ChartOptions<"line">>({
     <main class="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
         <div class="mx-auto grid w-full max-w-6xl gap-2">
             <h1 class="text-3xl font-semibold">
-                <div class="flex justify-between items-center gap-2">
+                <div class="flex justify-between items-center">
+                    <!-- League Name on the Left -->
                     <span>{{ league?.name }}</span>
-                    <Button variant="outline" size="lg" class="p-2"
-                        @click="league?.shareToken && copyToClipboard(league.shareToken)">
-                        <Share2 style="width: 20px; height: 24px;" />
-                        <!-- {{ league?.shareToken }} -->
-                    </Button>
-                    <Button variant="outline" size="lg" class="p-2" @click=leaveLeague()>
-                        <LogOut style="width: 20px; height: 24px;" />
-                    </Button>
+
+                    <!-- Buttons Fixed to the Right -->
+                    <div class="flex gap-2 ml-auto">
+                        <Button variant="outline" size="lg" class="p-2"
+                            @click="league?.shareToken && copyToClipboard(league.shareToken)">
+                            <Share2 style="width: 20px; height: 24px;" />
+                            <!-- {{ league?.shareToken }} -->
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger>
+                                <Button variant="outline" size="lg" class="p-2">
+                                    <LogOut style="width: 20px; height: 24px;" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>¿Estas seguro?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Tendrás que pedir el código a alguien para volver a unirte.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        No, gracias
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction @click="leaveLeague()">
+                                        Abandonar liga
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 </div>
             </h1>
+
             <p class="text-lg">
                 {{ league?.description }}
             </p>
@@ -290,13 +342,22 @@ const chartOptions = ref<ChartOptions<"line">>({
                                         <Plus />
                                     </Button>
                                     <span class="text-lg font-bold">{{ counter }}</span>
-                                    <Button variant="outline" size="icon" class="px-2 py-1" :disabled="counter === 0"
-                                        @click="counters[index]--">
+                                    <Button :variant="counter === 0 ? 'outlineLight' : 'outline'" size="icon"
+                                        class="px-2 py-1" :disabled="counter === 0" @click="counters[index]--">
                                         <Minus />
                                     </Button>
+
                                 </div>
                             </div>
                         </div>
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="item-1">
+                                <AccordionTrigger>¿Más bebidas?</AccordionTrigger>
+                                <AccordionContent>
+                                    Yes. It adheres to the WAI-ARIA design pattern.
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </CardContent>
                     <CardFooter class="border-t px-6 py-4 flex justify-between">
                         <Button :variant="calculateTotal() === 0 ? 'secondary' : 'default'" @click="saveScores()"
@@ -347,17 +408,17 @@ const chartOptions = ref<ChartOptions<"line">>({
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <LineChart :chartData="chartData" :chartOptions="chartOptions" />
+                        <LineChart :chartData="chartData" :chartOptions="chartOptions" style="width: 100%;" />
                     </CardContent>
                     <CardFooter>
-                        <div className="flex w-full items-start gap-2 text-sm">
+                        <!-- <div className="flex w-full items-start gap-2 text-sm">
                             <div className="grid gap-2">
 
                                 <div className="flex items-center gap-2 leading-none text-muted-foreground">
                                     Showing total visitors for the last 6 months
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </CardFooter>
                 </Card>
             </div>

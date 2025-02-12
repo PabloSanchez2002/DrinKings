@@ -25,7 +25,7 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-    <n-card title="User Progress">
+    <div class="chart-container">
         <Line :data="props.chartData" :options="props.chartOptions" />
-    </n-card>
+    </div>
 </template>

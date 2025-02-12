@@ -1,2 +1,3 @@
 
 una liga que no perteneces, redirect to error page
+crear y unirse liga no hace redirect bien

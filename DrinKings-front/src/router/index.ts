@@ -13,12 +13,12 @@ const routes = [
     redirect: '/home', // Redirect to /home
   },
   {
-    path: '/home', // URL path
+    path: '/', // URL path
     name: 'Home', // Route name (optional)
     component: Home, // Component to render
     meta: { requiresAuth: true },
     children: [
-      { path: '/', component: Landing },
+      { path: 'home', component: Landing },
       { path: 'profile', component: Profile },
       { path: 'league/:id', component: Liga },
     ]
@@ -39,7 +39,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     const isAuthenticated = !!localStorage.getItem('auth_token');
     if (to.meta.requiresAuth && !isAuthenticated) {
       next('/access/login');

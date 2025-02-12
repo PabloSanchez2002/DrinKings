@@ -7,6 +7,8 @@ const chartData = ref<ChartData<"line">>(
     {
         "datasets": [
             {
+                "label": "admin12582",
+                "fill": false,
                 "data": [
                     23,
                     23,
@@ -60,13 +62,22 @@ const chartData = ref<ChartData<"line">>(
                     183,
                     183,
                     183,
-                    193
+                    193,
+                    193,
+                    193,
+                    193,
+                    193,
+                    193,
+                    193,
+                    193,
+                    193,
+                    213
                 ],
-                "fill": false,
-                "label": "admin12",
                 "borderColor": "#42A5F5"
             },
             {
+                "label": "jgaz",
+                "fill": false,
                 "data": [
                     0,
                     0,
@@ -101,6 +112,15 @@ const chartData = ref<ChartData<"line">>(
                     0,
                     0,
                     0,
+                    23,
+                    23,
+                    23,
+                    23,
+                    23,
+                    23,
+                    23,
+                    23,
+                    23,
                     23,
                     23,
                     23,
@@ -122,11 +142,11 @@ const chartData = ref<ChartData<"line">>(
                     23,
                     23
                 ],
-                "fill": false,
-                "label": "jgaz",
                 "borderColor": "#66BB6A"
             },
             {
+                "label": "manu345",
+                "fill": false,
                 "data": [
                     0,
                     0,
@@ -174,6 +194,15 @@ const chartData = ref<ChartData<"line">>(
                     0,
                     0,
                     0,
+                    85,
+                    85,
+                    85,
+                    85,
+                    85,
+                    85,
+                    85,
+                    85,
+                    85,
                     85,
                     85,
                     85,
@@ -182,11 +211,11 @@ const chartData = ref<ChartData<"line">>(
                     85,
                     85
                 ],
-                "fill": false,
-                "label": "manu345",
                 "borderColor": "#FFA726"
             },
             {
+                "label": "danige234",
+                "fill": false,
                 "data": [
                     0,
                     0,
@@ -240,10 +269,17 @@ const chartData = ref<ChartData<"line">>(
                     20,
                     20,
                     20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
+                    20,
                     20
                 ],
-                "fill": false,
-                "label": "danige234",
                 "borderColor": "#AB47BC"
             }
         ],
@@ -300,7 +336,16 @@ const chartData = ref<ChartData<"line">>(
             "2025-01-31",
             "2025-02-01",
             "2025-02-02",
-            "2025-02-03"
+            "2025-02-03",
+            "2025-02-04",
+            "2025-02-05",
+            "2025-02-06",
+            "2025-02-07",
+            "2025-02-08",
+            "2025-02-09",
+            "2025-02-10",
+            "2025-02-11",
+            "2025-02-12"
         ]
     }
 );
@@ -313,13 +358,34 @@ const chartOptions = ref<ChartOptions<"line">>({
         point: {
             radius: 0
         }
+    },
+    animations: {
+        tension: {
+            duration: 1000,
+            easing: 'linear',
+            from: 1,
+            to: 0,
+            loop: true
+        }
+    },
+    scales: {
+        y: {
+            min: 0,
+            max: 100
+        }
+    },
+    plugins: {
+        legend: {
+            display: true,
+            position: 'bottom'
+        }
     }
 });
 </script>
 
 <template>
-    <n-space vertical>
-        <n-h1>User Activity</n-h1>
+    <div style="height: 400px;">
+
         <LineChart :chartData="chartData" :chartOptions="chartOptions" />
-    </n-space>
+    </div>
 </template>

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { FormControl, FormField, FormMessage } from '@/components/ui/form'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { CircleUser, Beer, LoaderCircle } from 'lucide-vue-next'
 import { CirclePlus, SquarePlus } from 'lucide-vue-next';
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { jwtDecode } from 'jwt-decode';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import apiClient from '@/services/apiClient'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
@@ -30,11 +30,12 @@ interface League {
 	// Add other properties if needed
 }
 const userLeagues = ref<League[]>([]);
+const route = useRoute();
 const router = useRouter()
 const isLoading = ref(false)
 
 // Validation schema
-const formSchema = toTypedSchema(
+const createLeagueSchema = toTypedSchema(
 	z.object({
 		name: z.string().min(3, { message: 'El nombre debe de ser de 3 o mas caracteres' }),
 		description: z.string().min(3, { message: 'La descripción es requerida' }),
@@ -46,13 +47,17 @@ const joinLeagueSchema = toTypedSchema(
 	})
 )
 
-const { handleSubmit, isFieldDirty } = useForm({
-	validationSchema: formSchema,
+const { handleSubmit: handleSubmitCreate, isFieldDirty: isFieldDirtyCreate } = useForm({
+	validationSchema: createLeagueSchema,
 })
 
 const { handleSubmit: handleSubmitJoin, isFieldDirty: isFieldDirtyJoin } = useForm({
 	validationSchema: joinLeagueSchema,
 })
+
+watch(() => route.params.id, () => {
+	reloadLeagues()
+});
 
 const reloadLeagues = () => {
 	apiClient.get('/user/getLeaguesOfUser', {
@@ -95,15 +100,15 @@ const logout = () => {
 
 const toProfile = () => {
 	console.log('Going to profile');
-	router.push('/home/profile')
+	router.push('/profile')
 }
 
 const goToLeague = (leagueId: number) => {
-	router.push(`/home/league/${leagueId}`);
+	router.push(`/league/${leagueId}`);
 	isSheetOpen.value = false;
 }
 
-const onSubmitCreate = handleSubmit(async (values) => {
+const onSubmitCreate = handleSubmitCreate(async (values) => {
 	isLoading.value = true
 
 	console.log('Form submitted with:', values)
@@ -263,7 +268,7 @@ const joinLeague = async (shareToken: any) => {
 									<form @submit="onSubmitCreate" class="w-90 mx-auto space-y-3">
 										<!-- Name Field -->
 										<FormField v-slot="{ componentField }" name="name"
-											:validate-on-blur="!isFieldDirty">
+											:validate-on-blur="!isFieldDirtyCreate">
 											<div class="grid grid-cols-4 items-center gap-4">
 												<Label for="name" class="text-right">Nombre</Label>
 												<FormControl>
@@ -275,7 +280,7 @@ const joinLeague = async (shareToken: any) => {
 										</FormField>
 										<!-- Description Field -->
 										<FormField v-slot="{ componentField }" name="description"
-											:validate-on-blur="!isFieldDirty">
+											:validate-on-blur="!isFieldDirtyCreate">
 											<div class="grid grid-cols-4 items-center gap-4">
 												<Label for="description" class="text-right">Descripción</Label>
 												<FormControl>

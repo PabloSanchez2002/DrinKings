@@ -2,7 +2,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from '@/components/ui/button'
-import { CircleUser, Beer, LoaderCircle } from 'lucide-vue-next'
+import { Beer } from 'lucide-vue-next'
 
 </script>
 
