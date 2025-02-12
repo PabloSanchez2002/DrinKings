@@ -229,7 +229,7 @@ const joinLeague = async (shareToken: any) => {
 					</Button>
 				</SheetTrigger>
 				<SheetContent side="left" class="h-full">
-					<nav class="h-full flex flex-col gap-6  font-medium justify-between">
+					<nav class="h-full flex flex-col gap-6 font-medium justify-between">
 						<!-- Title Section -->
 						<div class="flex flex-col gap-4">
 							<div class="flex gap-2 text-2xl font-semibold">
@@ -238,9 +238,9 @@ const joinLeague = async (shareToken: any) => {
 							</div>
 							<!-- Ligas -->
 							<div v-for="league in userLeagues" :key="league.id">
-								<a href="#" class="text-muted-foreground hover:text-foreground"
+								<a href="#" class="text-muted-foreground hover:text-foreground text-xl"
 									@click.prevent="goToLeague(league.id)">
-									{{ league.name }}
+									👉 {{ league.name }}
 								</a>
 							</div>
 						</div>
