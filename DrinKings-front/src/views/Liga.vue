@@ -38,9 +38,9 @@ const { toast } = useToast();
 
 // Counter data for each button
 const counters = ref<number[]>([0, 0, 0]);
-const countersExtra = ref<number[]>([0, 0]);
+// const countersExtra = ref<number[]>([0, 0]);
 const points = [10, 4, 2]; // Points associated with each button
-const pointsExtra = [12, 8]
+// const pointsExtra = [12, 8]
 const totalScores = ref<{ [key: string]: number }>({});
 const userScore = ref<number | null>(null);
 

@@ -49,7 +49,7 @@ const joinLeagueSchema = toTypedSchema(
 
 const { handleSubmit: handleSubmitCreate, isFieldDirty: isFieldDirtyCreate } = useForm({
 	validationSchema: createLeagueSchema,
-})
+});
 
 const { handleSubmit: handleSubmitJoin, isFieldDirty: isFieldDirtyJoin } = useForm({
 	validationSchema: joinLeagueSchema,
