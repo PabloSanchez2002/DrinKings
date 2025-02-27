@@ -21,3 +21,15 @@
 # npx shadcn-vue@latest init
 # npx shadcn-vue@latest add X
 
+# npm install -g cordova
+# cordova create DrinkKings-android com.example.drinKings Android
+# cd DrinKings-android
+# cp -r ../dist/* www/
+# cordova platform add android
+# cordova build android
+
+# para instalar android studio
+# sudo apt install default-jdk -y
+# sudo snap install android-studio --classic
+# instalar sdk 34
+
