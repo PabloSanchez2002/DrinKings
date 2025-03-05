@@ -1,20 +1,16 @@
 <script setup lang="ts">
+import CreateLeagueForm from '@/components/ui/CreateLeagueForm.vue'
+import JoinLeagueFrom from '@/components/ui/JoinLeagueFrom.vue'
+import apiClient from '@/services/apiClient'
 import { Button } from '@/components/ui/button'
-import { FormControl, FormField, FormMessage } from '@/components/ui/form'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { CircleUser, Beer, LoaderCircle } from 'lucide-vue-next'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { CircleUser, Beer } from 'lucide-vue-next'
 import { CirclePlus, SquarePlus } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router'
 import { jwtDecode } from 'jwt-decode';
 import { ref, watch } from 'vue';
-import apiClient from '@/services/apiClient'
-import { toTypedSchema } from '@vee-validate/zod'
-import { z } from 'zod'
-import { useForm } from 'vee-validate'
 import { useToast } from '@/components/ui/toast/use-toast'
 
 const { toast } = useToast()
@@ -34,26 +30,6 @@ const route = useRoute();
 const router = useRouter()
 const isLoading = ref(false)
 
-// Validation schema
-const createLeagueSchema = toTypedSchema(
-	z.object({
-		name: z.string().min(3, { message: 'El nombre debe de ser de 3 o mas caracteres' }),
-		description: z.string().min(3, { message: 'La descripción es requerida' }),
-	})
-)
-const joinLeagueSchema = toTypedSchema(
-	z.object({
-		shareToken: z.string().min(1, { message: 'El código de la liga es requerido' }),
-	})
-)
-
-const { handleSubmit: handleSubmitCreate, isFieldDirty: isFieldDirtyCreate } = useForm({
-	validationSchema: createLeagueSchema,
-});
-
-const { handleSubmit: handleSubmitJoin, isFieldDirty: isFieldDirtyJoin } = useForm({
-	validationSchema: joinLeagueSchema,
-})
 
 watch(() => route.params.id, () => {
 	reloadLeagues()
@@ -94,7 +70,6 @@ const logout = () => {
 	localStorage.removeItem('auth_token')
 
 	console.log('Logged out');
-
 	router.push('/access/login')
 }
 
@@ -108,7 +83,7 @@ const goToLeague = (leagueId: number) => {
 	isSheetOpen.value = false;
 }
 
-const onSubmitCreate = handleSubmitCreate(async (values) => {
+const createLeague = async (values: any) => {
 	isLoading.value = true
 
 	console.log('Form submitted with:', values)
@@ -124,7 +99,7 @@ const onSubmitCreate = handleSubmitCreate(async (values) => {
 				description: 'Liga ' + response.data.name + ' creada correctamente.',
 				duration: 2000,
 			})
-			joinLeague(response.data.shareToken)
+			joinLeague(response.data.shareToken.value)
 			reloadLeagues()
 			goToLeague(response.data.id)
 			isCreateDialogOpen.value = false
@@ -145,52 +120,12 @@ const onSubmitCreate = handleSubmitCreate(async (values) => {
 	}).finally(() => {
 		isLoading.value = false
 	})
-
-})
-
-const onSubmitJoin = handleSubmitJoin(async (values: any) => {
-	isLoading.value = true
-
-	console.log('Form submitted with:', values.shareToken.value)
-
-	apiClient.post('/league/join', values, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	}).then((response) => {
-		if (response.status === 200) {
-			toast({
-				title: 'Éxito',
-				description: 'Liga ' + response.data.name + ' unida correctamente.',
-				duration: 2000,
-			})
-			reloadLeagues()
-			goToLeague(response.data.id)
-			isJoinDialogOpen.value = false
-		}
-		else {
-			toast({
-				title: 'Error',
-				description: response.data.message || 'Error al unirse a la liga',
-				variant: 'destructive',
-			})
-		}
-	}).catch(error => {
-		toast({
-			title: 'Error',
-			description: error.response.data.message || 'No se pudo unir a la liga. Inténtalo de nuevo.',
-			variant: 'destructive',
-		})
-	}).finally(() => {
-		isLoading.value = false
-	})
-})
-
+}
 
 const joinLeague = async (shareToken: any) => {
 	// Implement the joinLeague function
 	console.log('Joining league with shareToken:', shareToken)
-	apiClient.post('/league/join', { shareToken }, {
+	apiClient.post('/league/join', shareToken, {
 		headers: {
 			Authorization: `Bearer ${token}`,
 		},
@@ -198,7 +133,7 @@ const joinLeague = async (shareToken: any) => {
 		.then((response) => {
 			toast({
 				title: 'Éxito',
-				description: 'UNido a liga ' + response.data.name + ' correctamente.',
+				description: 'Unido a liga ' + response.data.name + ' correctamente.',
 				duration: 2000,
 			})
 			reloadLeagues()
@@ -213,7 +148,7 @@ const joinLeague = async (shareToken: any) => {
 			})
 		})
 		.finally(() => {
-			// isLoading.value = false
+			isLoading.value = false
 		})
 }
 
@@ -265,42 +200,7 @@ const joinLeague = async (shareToken: any) => {
 											Complete los campos para crear una nueva liga.
 										</DialogDescription>
 									</DialogHeader>
-									<form @submit="onSubmitCreate" class="w-90 mx-auto space-y-3">
-										<!-- Name Field -->
-										<FormField v-slot="{ componentField }" name="name"
-											:validate-on-blur="!isFieldDirtyCreate">
-											<div class="grid grid-cols-4 items-center gap-4">
-												<Label for="name" class="text-right">Nombre</Label>
-												<FormControl>
-													<Input id="name" placeholder="Nombre de la liga" class="col-span-3"
-														v-bind="componentField" />
-												</FormControl>
-												<FormMessage class="col-span-4 text-sm text-red-500" />
-											</div>
-										</FormField>
-										<!-- Description Field -->
-										<FormField v-slot="{ componentField }" name="description"
-											:validate-on-blur="!isFieldDirtyCreate">
-											<div class="grid grid-cols-4 items-center gap-4">
-												<Label for="description" class="text-right">Descripción</Label>
-												<FormControl>
-													<Input id="description" placeholder="Descripción" class="col-span-3"
-														v-bind="componentField" />
-												</FormControl>
-												<FormMessage class="col-span-4 text-sm text-red-500" />
-											</div>
-										</FormField>
-										<!-- Form Footer -->
-										<DialogFooter class="gap-4">
-											<DialogClose as-child>
-												<Button variant="outline">Cancel</Button>
-											</DialogClose>
-											<Button type="submit" :disabled="isLoading">
-												<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
-												Crear una liga!
-											</Button>
-										</DialogFooter>
-									</form>
+									<CreateLeagueForm :createLeague="createLeague" :isLoading="isLoading" />
 								</DialogContent>
 							</Dialog>
 
@@ -321,30 +221,7 @@ const joinLeague = async (shareToken: any) => {
 											Introduzca el código de la liga para unirse.
 										</DialogDescription>
 									</DialogHeader>
-									<form @submit="onSubmitJoin" class="w-90 mx-auto space-y-3">
-										<!-- Share Token Field -->
-										<FormField v-slot="{ componentField }" name="shareToken"
-											:validate-on-blur="!isFieldDirtyJoin">
-											<div class="grid grid-cols-4 items-center gap-4">
-												<Label for="shareToken" class="text-right">Código</Label>
-												<FormControl>
-													<Input id="shareToken" placeholder="Código de la liga"
-														class="col-span-3" v-bind="componentField" />
-												</FormControl>
-												<FormMessage class="col-span-4 text-sm text-red-500" />
-											</div>
-										</FormField>
-										<!-- Form Footer -->
-										<DialogFooter class="gap-4">
-											<DialogClose as-child>
-												<Button variant="outline">Cancel</Button>
-											</DialogClose>
-											<Button type="submit" :disabled="isLoading">
-												<LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
-												Únete a la liga!
-											</Button>
-										</DialogFooter>
-									</form>
+									<JoinLeagueFrom :joinLeague="joinLeague" :isLoading="isLoading" />
 								</DialogContent>
 							</Dialog>
 						</div>

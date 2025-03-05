@@ -11,48 +11,37 @@ import { useForm } from 'vee-validate'
 import * as z from 'zod';
 
 const props = defineProps<{
-    createLeague: (values: any) => void;
+    joinLeague: (values: any) => void;
     isLoading: boolean;
 }>();
 
 // Validación del formulario
-const createLeagueSchema = toTypedSchema(
+const joinLeagueSchema = toTypedSchema(
     z.object({
-        name: z.string().min(3, { message: 'El nombre debe de ser de 3 o mas caracteres' }),
-        description: z.string().min(3, { message: 'La descripción es requerida' }),
+        shareToken: z.string().min(1, { message: 'El código de la liga es requerido' }),
     })
 )
 
 
 const { handleSubmit, isFieldDirty } = useForm({
-    validationSchema: createLeagueSchema,
-});
+    validationSchema: joinLeagueSchema,
+})
 
 
 const onSubmit = handleSubmit(async (createLeagueSchema) => {
-    props.createLeague(createLeagueSchema);
+    props.joinLeague(createLeagueSchema);
 
 });
 </script>
 
 <template>
     <form @submit="onSubmit" class="w-90 mx-auto space-y-3">
-        <!-- Name Field -->
-        <FormField v-slot="{ componentField }" name="name" :validate-on-blur="!isFieldDirty">
+        <!-- Share Token Field -->
+        <FormField v-slot="{ componentField }" name="shareToken" :validate-on-blur="!isFieldDirty">
             <div class="grid grid-cols-4 items-center gap-4">
-                <Label for="name" class="text-right">Nombre</Label>
+                <Label for="shareToken" class="text-right">Código</Label>
                 <FormControl>
-                    <Input id="name" placeholder="Nombre de la liga" class="col-span-3" v-bind="componentField" />
-                </FormControl>
-                <FormMessage class="col-span-4 text-sm text-red-500" />
-            </div>
-        </FormField>
-        <!-- Description Field -->
-        <FormField v-slot="{ componentField }" name="description" :validate-on-blur="!isFieldDirty">
-            <div class="grid grid-cols-4 items-center gap-4">
-                <Label for="description" class="text-right">Descripción</Label>
-                <FormControl>
-                    <Input id="description" placeholder="Descripción" class="col-span-3" v-bind="componentField" />
+                    <Input id="shareToken" placeholder="Código de la liga" class="col-span-3" v-bind="componentField" />
                 </FormControl>
                 <FormMessage class="col-span-4 text-sm text-red-500" />
             </div>
@@ -64,7 +53,7 @@ const onSubmit = handleSubmit(async (createLeagueSchema) => {
             </DialogClose>
             <Button type="submit" :disabled="isLoading">
                 <LoaderCircle v-if="isLoading" class="w-5 h-5 mr-2" />
-                Crear una liga!
+                Únete a la liga!
             </Button>
         </DialogFooter>
     </form>

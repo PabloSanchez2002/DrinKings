@@ -1,5 +1,5 @@
 una liga que no perteneces, redirect to error page
-crear y unirse liga no hace redirect bien (arreglar componentes de formularios)
 revisar variables duplicadas en el codigo (evitar consultas duplicadas)
 revisar cordova splash screen
 revisar .env de producción, BBDD y clave secreta de sesiones
+primer insert en scores da error al intentar agrupar por fecha

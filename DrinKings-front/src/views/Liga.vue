@@ -232,10 +232,10 @@ const chartOptions = ref<ChartOptions<"line">>({
         }
     },
     scales: {
-        y: {
-            min: 0,
-            max: 150
-        }
+        // y: {
+        //     min: 0,
+        //     max: 150
+        // }
     },
     plugins: {
         legend: {
