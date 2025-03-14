@@ -20,7 +20,7 @@ apiClient.get('/test')
 		} else {
 			toast.toast({
 				title: 'Servidor offline ',
-				description: response.data.message || 'Servidor offline 😢',
+				description: response.data.message || response.data || 'Servidor offline 😢',
 				variant: 'destructive',
 			})
 		}

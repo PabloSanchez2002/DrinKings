@@ -15,6 +15,7 @@ const routes = [
   {
     path: '/', // URL path
     name: 'Home', // Route name (optional)
+    redirect: '/home', // Always redirect to /home
     component: Home, // Component to render
     meta: { requiresAuth: true },
     children: [
