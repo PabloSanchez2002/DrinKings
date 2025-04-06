@@ -33,3 +33,14 @@
 # sudo snap install android-studio --classic
 # instalar sdk 34
 
+
+# para correr en Capacitor
+# npm install @capacitor/core @capacitor/cli
+# npx cap init
+# npx cap add android
+
+# npm run build
+# npx cap run android
+# npx cap sync android
+
+
